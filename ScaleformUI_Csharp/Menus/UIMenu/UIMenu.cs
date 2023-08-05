@@ -1141,6 +1141,7 @@ namespace ScaleformUI.Menu
         {
             _customTexture = new KeyValuePair<string, string>(spriteLibrary, spriteName);
             Offset = offset;
+            Children = new Dictionary<UIMenuItem, UIMenu>();
             WidthOffset = 0;
             Glare = glare;
             _menuGlare = new ScaleformWideScreen("mp_menu_glare");
@@ -1460,6 +1461,38 @@ namespace ScaleformUI.Menu
             if (tmpControls.Any(tuple => Game.IsControlPressed(tuple.Item2, tuple.Item1)))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Makes the specified item open a menu when is activated.
+        /// </summary>
+        /// <param name="menuToBind">The menu that is going to be opened when the item is activated.</param>
+        /// <param name="itemToBindTo">The item that is going to activate the menu.</param>
+        public void BindMenuToItem(UIMenu menuToBind, UIMenuItem itemToBindTo)
+        {
+            if (!MenuItems.Contains(itemToBindTo))
+                AddItem(itemToBindTo);
+            menuToBind.ParentMenu = this;
+            menuToBind.ParentItem = itemToBindTo;
+            if (Children.ContainsKey(itemToBindTo))
+                Children[itemToBindTo] = menuToBind;
+            else
+                Children.Add(itemToBindTo, menuToBind);
+        }
+
+
+        /// <summary>
+        /// Remove menu binding from button.
+        /// </summary>
+        /// <param name="releaseFrom">Button to release from.</param>
+        /// <returns>Returns true if the operation was successful.</returns>
+        public bool ReleaseMenuFromItem(UIMenuItem releaseFrom)
+        {
+            if (!Children.ContainsKey(releaseFrom)) return false;
+            Children[releaseFrom].ParentItem = null;
+            Children[releaseFrom].ParentMenu = null;
+            Children.Remove(releaseFrom);
+            return true;
         }
 
         #endregion
@@ -2571,6 +2604,19 @@ namespace ScaleformUI.Menu
                 }
             }
         }
+
+        /// <summary>
+        /// If this is a nested menu, returns the parent menu. You can also set it to a menu so when pressing Back it goes to that menu.
+        /// </summary>
+        public UIMenu ParentMenu { get; internal set; }
+
+        /// <summary>
+        /// If this is a nested menu, returns the item it was bound to.
+        /// </summary>
+        public UIMenuItem ParentItem { get; set; }
+
+        //Tree structure
+        public Dictionary<UIMenuItem, UIMenu> Children { get; internal set; }
 
         /// <summary>
         /// Returns the current width offset.
