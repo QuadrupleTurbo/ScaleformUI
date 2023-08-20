@@ -1,6 +1,7 @@
 ﻿using CitizenFX.Core;
+using ScaleformUI.Scaleforms;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI
 {
 
     public enum WarningPopupType
@@ -36,8 +37,8 @@ namespace ScaleformUI.Scaleforms
             if (_sc != null) return;
             _sc = new ScaleformWideScreen("POPUP_WARNING");
             int timeout = 1000;
-            int start = Main.GameTime;
-            while (!_sc.IsLoaded && Main.GameTime - start < timeout) await BaseScript.Delay(0);
+            int start = ScaleformUI.GameTime;
+            while (!_sc.IsLoaded && ScaleformUI.GameTime - start < timeout) await BaseScript.Delay(0);
         }
 
         /// <summary>
@@ -95,29 +96,20 @@ namespace ScaleformUI.Scaleforms
             _disableControls = true;
             _buttonList = buttons;
             if (buttons == null || buttons.Count == 0) return;
-            Main.InstructionalButtons.UseMouseButtons = true;
-            Main.InstructionalButtons.SetInstructionalButtons(_buttonList);
-            Main.InstructionalButtons.ControlButtons.ForEach(x => x.OnControlSelected += OnControlSelected);
+            ScaleformUI.InstructionalButtons.SetInstructionalButtons(_buttonList);
+            ScaleformUI.InstructionalButtons.UseMouseButtons = true;
+            ScaleformUI.InstructionalButtons.ControlButtons.ForEach(x => x.OnControlSelected += X_OnControlSelected);
             _sc.CallFunction("SHOW_POPUP_WARNING", 1000, title, subtitle, prompt, showBackground, (int)type, errorMsg);
+            ScaleformUI.InstructionalButtons.Enabled = true;
         }
 
-        private void OnControlSelected(InstructionalButton control)
+        private void X_OnControlSelected(InstructionalButton control)
         {
             Dispose();
             OnButtonPressed?.Invoke(control);
-            Main.InstructionalButtons.ClearButtonList();
-            Main.InstructionalButtons.UseMouseButtons = false;
+            ScaleformUI.InstructionalButtons.Enabled = false;
+            ScaleformUI.InstructionalButtons.UseMouseButtons = false;
             OnButtonPressed = null;
-            if (MenuHandler.CurrentMenu != null)
-            {
-                if (MenuHandler.CurrentMenu.InstructionalButtons.Count > 0)
-                    Main.InstructionalButtons.SetInstructionalButtons(MenuHandler.CurrentMenu.InstructionalButtons);
-            }
-            else if (MenuHandler.currentBase != null)
-            {
-                if (MenuHandler.currentBase.InstructionalButtons.Count > 0)
-                    Main.InstructionalButtons.SetInstructionalButtons(MenuHandler.currentBase.InstructionalButtons);
-            }
         }
 
         internal void Update()

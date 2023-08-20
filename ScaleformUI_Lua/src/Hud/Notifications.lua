@@ -1,127 +1,4 @@
-Notifications = setmetatable({
-    _handle = 0,
-    Color = {
-        Red = 27,
-        Yellow = 50,
-        Gold = 12,
-        GreenLight = 46,
-        GreenDark = 47,
-        Cyan = 48,
-        Blue = 51,
-        Purple = 49,
-        Rose = 45
-    },
-    NotificationIcon = {
-        Default = 0,
-        Bubble = 1,
-        Mail = 2,
-        FriendRequest = 3,
-        Default2 = 4,
-        Reply = 7,
-        ReputationPoints = 8,
-        Money = 9
-    },
-    IconChars = {
-        Abigail = "CHAR_ABIGAIL",
-        Amanda = "CHAR_AMANDA",
-        Ammunation = "CHAR_AMMUNATION",
-        Andreas = "CHAR_ANDREAS",
-        Antonia = "CHAR_ANTONIA",
-        Ashley = "CHAR_ASHLEY",
-        BankOfLiberty = "CHAR_BANK_BOL",
-        BankFleeca = "CHAR_BANK_FLEECA",
-        BankMaze = "CHAR_BANK_MAZE",
-        Barry = "CHAR_BARRY",
-        Beverly = "CHAR_BEVERLY",
-        BikeSite = "CHAR_BIKESITE",
-        BlankEntry = "CHAR_BLANK_ENTRY",
-        Blimp = "CHAR_BLIMP",
-        Blocked = "CHAR_BLOCKED",
-        BoatSite = "CHAR_BOATSITE",
-        BrokenDownGirl = "CHAR_BROKEN_DOWN_GIRL",
-        BugStars = "CHAR_BUGSTARS",
-        Call911 = "CHAR_CALL911",
-        LegendaryMotorsport = "CHAR_CARSITE",
-        SSASuperAutos = "CHAR_CARSITE2",
-        Castro = "CHAR_CASTRO",
-        ChatCall = "CHAR_CHAT_CALL",
-        Chef = "CHAR_CHEF",
-        Cheng = "CHAR_CHENG",
-        ChengSenior = "CHAR_CHENGSR",
-        Chop = "CHAR_CHOP",
-        Cris = "CHAR_CRIS",
-        Dave = "CHAR_DAVE",
-        Default = "CHAR_DEFAULT",
-        Denise = "CHAR_DENISE",
-        DetonateBomb = "CHAR_DETONATEBOMB",
-        DetonatePhone = "CHAR_DETONATEPHONE",
-        Devin = "CHAR_DEVIN",
-        SubMarine = "CHAR_DIAL_A_SUB",
-        Dom = "CHAR_DOM",
-        DomesticGirl = "CHAR_DOMESTIC_GIRL",
-        Dreyfuss = "CHAR_DREYFUSS",
-        DrFriedlander = "CHAR_DR_FRIEDLANDER",
-        Epsilon = "CHAR_EPSILON",
-        EstateAgent = "CHAR_ESTATE_AGENT",
-        Facebook = "CHAR_FACEBOOK",
-        FilmNoire = "CHAR_FILMNOIR",
-        Floyd = "CHAR_FLOYD",
-        Franklin = "CHAR_FRANKLIN",
-        FranklinTrevor = "CHAR_FRANK_TREV_CONF",
-        GayMilitary = "CHAR_GAYMILITARY",
-        Hao = "CHAR_HAO",
-        HitcherGirl = "CHAR_HITCHER_GIRL",
-        Hunter = "CHAR_HUNTER",
-        Jimmy = "CHAR_JIMMY",
-        JimmyBoston = "CHAR_JIMMY_BOSTON",
-        Joe = "CHAR_JOE",
-        Josef = "CHAR_JOSEF",
-        Josh = "CHAR_JOSH",
-        LamarDog = "CHAR_LAMAR",
-        Lester = "CHAR_LESTER",
-        Skull = "CHAR_LESTER_DEATHWISH",
-        LesterFranklin = "CHAR_LEST_FRANK_CONF",
-        LesterMichael = "CHAR_LEST_MIKE_CONF",
-        LifeInvader = "CHAR_LIFEINVADER",
-        LsCustoms = "CHAR_LS_CUSTOMS",
-        LSTI = "CHAR_LS_TOURIST_BOARD",
-        Manuel = "CHAR_MANUEL",
-        Marnie = "CHAR_MARNIE",
-        Martin = "CHAR_MARTIN",
-        MaryAnn = "CHAR_MARY_ANN",
-        Maude = "CHAR_MAUDE",
-        Mechanic = "CHAR_MECHANIC",
-        Michael = "CHAR_MICHAEL",
-        MichaelFranklin = "CHAR_MIKE_FRANK_CONF",
-        MichaelTrevor = "CHAR_MIKE_TREV_CONF",
-        WarStock = "CHAR_MILSITE",
-        Minotaur = "CHAR_MINOTAUR",
-        Molly = "CHAR_MOLLY",
-        MorsMutual = "CHAR_MP_MORS_MUTUAL",
-        ArmyContact = "CHAR_MP_ARMY_CONTACT",
-        Brucie = "CHAR_MP_BRUCIE",
-        FibContact = "CHAR_MP_FIB_CONTACT",
-        RockStarLogo = "CHAR_MP_FM_CONTACT",
-        Gerald = "CHAR_MP_GERALD",
-        Julio = "CHAR_MP_JULIO",
-        MechanicChinese = "CHAR_MP_MECHANIC",
-        MerryWeather = "CHAR_MP_MERRYWEATHER",
-        Unicorn = "CHAR_MP_STRIPCLUB_PR",
-        Mom = "CHAR_MRS_THORNHILL",
-        MrsThornhill = "CHAR_MRS_THORNHILL",
-        PatriciaTrevor = "CHAR_PATRICIA",
-        PegasusDelivery = "CHAR_PEGASUS_DELIVERY",
-        ElitasTravel = "CHAR_PLANESITE",
-        Sasquatch = "CHAR_SASQUATCH",
-        Simeon = "CHAR_SIMEON",
-        SocialClub = "CHAR_SOCIAL_CLUB",
-        Solomon = "CHAR_SOLOMON",
-        Taxi = "CHAR_TAXI",
-        Trevor = "CHAR_TREVOR",
-        YouTube = "CHAR_YOUTUBE",
-        Wade = "CHAR_WADE",
-    }
-}, Notifications)
+Notifications = setmetatable({}, Notifications)
 Notifications.__index = Notifications
 Notifications.__call = function()
     return "Notifications", "Notifications"
@@ -137,13 +14,151 @@ end
 ---@field public ShowNotification fun(self:Notifications, msg:string, blink:boolean, showInBrief:boolean):nil
 ---@field public ShowNotificationWithColor fun(self:Notifications, msg:string, color:Colours, blink:boolean, showInBrief:boolean):nil
 ---@field public ShowHelpNotification fun(self:Notifications, helpText:string, duration:number):nil
----@field public ShowFloatingHelpNotification fun(self:Notifications, helpText:string, coords:vector3):nil
+---@field public ShowFloatingHelpNotification fun(self:Notifications, helpText:string, coords:vector3, duration:number):nil
 ---@field public ShowAdvancedNotification fun(self:Notifications, title:string, subtitle:string, body:string, character:NotificationCharacters, icon:NotificationIcon, backgroundColor:Colours, flashColoir:table<number, number, number>, blink:boolean, type:NotificationType, sound:string):nil
 ---@field public ShowStatNotification fun(self:Notifications, newProgress:number, oldProgress:number, title:string, blink:boolean, showInBrief:boolean):nil
 ---@field public ShowVSNotification fun(self:Notifications, ped1:number, ped2:number, colour1:Colours, colour2:Colours):nil
 ---@field public DrawText3D fun(self:Notifications, coords:vector3, colour:Colours, text:string, font:Font, size:number):nil
 ---@field public DrawText fun(self:Notifications, x:number, y:number, text:string, colour:Colours, font:Font, textAlignment:number, shadow:boolean, outline:boolean, wordWrap:number):nil
 ---@field public ShowSubtitle fun(self:Notifications, text:string, duration:number):nil
+
+---Creates a new Notifications object
+---@return Notifications
+function Notifications.New()
+    local _notif = {
+        _handle = 0,
+        Type = {
+            Default = 0,
+            Bubble = 1,
+            Mail = 2,
+            FriendRequest = 3,
+            Default2 = 4,
+            Reply = 7,
+            ReputationPoints = 8,
+            Money = 9
+        },
+        Color = {
+            Red = 27,
+            Yellow = 50,
+            Gold = 12,
+            GreenLight = 46,
+            GreenDark = 47,
+            Cyan = 48,
+            Blue = 51,
+            Purple = 49,
+            Rose = 45
+        },
+        NotificationIcon = {
+            ChatBox = 1,
+            Email = 2,
+            AdDFriendRequest = 3,
+            RightJumpingArrow = 7,
+            RPIcon = 8,
+            DollarIcon = 9
+        },
+        IconChars = {
+            Abigail = "CHAR_ABIGAIL",
+            Amanda = "CHAR_AMANDA",
+            Ammunation = "CHAR_AMMUNATION",
+            Andreas = "CHAR_ANDREAS",
+            Antonia = "CHAR_ANTONIA",
+            Ashley = "CHAR_ASHLEY",
+            BankOfLiberty = "CHAR_BANK_BOL",
+            BankFleeca = "CHAR_BANK_FLEECA",
+            BankMaze = "CHAR_BANK_MAZE",
+            Barry = "CHAR_BARRY",
+            Beverly = "CHAR_BEVERLY",
+            BikeSite = "CHAR_BIKESITE",
+            BlankEntry = "CHAR_BLANK_ENTRY",
+            Blimp = "CHAR_BLIMP",
+            Blocked = "CHAR_BLOCKED",
+            BoatSite = "CHAR_BOATSITE",
+            BrokenDownGirl = "CHAR_BROKEN_DOWN_GIRL",
+            BugStars = "CHAR_BUGSTARS",
+            Call911 = "CHAR_CALL911",
+            LegendaryMotorsport = "CHAR_CARSITE",
+            SSASuperAutos = "CHAR_CARSITE2",
+            Castro = "CHAR_CASTRO",
+            ChatCall = "CHAR_CHAT_CALL",
+            Chef = "CHAR_CHEF",
+            Cheng = "CHAR_CHENG",
+            ChengSenior = "CHAR_CHENGSR",
+            Chop = "CHAR_CHOP",
+            Cris = "CHAR_CRIS",
+            Dave = "CHAR_DAVE",
+            Default = "CHAR_DEFAULT",
+            Denise = "CHAR_DENISE",
+            DetonateBomb = "CHAR_DETONATEBOMB",
+            DetonatePhone = "CHAR_DETONATEPHONE",
+            Devin = "CHAR_DEVIN",
+            SubMarine = "CHAR_DIAL_A_SUB",
+            Dom = "CHAR_DOM",
+            DomesticGirl = "CHAR_DOMESTIC_GIRL",
+            Dreyfuss = "CHAR_DREYFUSS",
+            DrFriedlander = "CHAR_DR_FRIEDLANDER",
+            Epsilon = "CHAR_EPSILON",
+            EstateAgent = "CHAR_ESTATE_AGENT",
+            Facebook = "CHAR_FACEBOOK",
+            FilmNoire = "CHAR_FILMNOIR",
+            Floyd = "CHAR_FLOYD",
+            Franklin = "CHAR_FRANKLIN",
+            FranklinTrevor = "CHAR_FRANK_TREV_CONF",
+            GayMilitary = "CHAR_GAYMILITARY",
+            Hao = "CHAR_HAO",
+            HitcherGirl = "CHAR_HITCHER_GIRL",
+            Hunter = "CHAR_HUNTER",
+            Jimmy = "CHAR_JIMMY",
+            JimmyBoston = "CHAR_JIMMY_BOSTON",
+            Joe = "CHAR_JOE",
+            Josef = "CHAR_JOSEF",
+            Josh = "CHAR_JOSH",
+            LamarDog = "CHAR_LAMAR",
+            Lester = "CHAR_LESTER",
+            Skull = "CHAR_LESTER_DEATHWISH",
+            LesterFranklin = "CHAR_LEST_FRANK_CONF",
+            LesterMichael = "CHAR_LEST_MIKE_CONF",
+            LifeInvader = "CHAR_LIFEINVADER",
+            LsCustoms = "CHAR_LS_CUSTOMS",
+            LSTI = "CHAR_LS_TOURIST_BOARD",
+            Manuel = "CHAR_MANUEL",
+            Marnie = "CHAR_MARNIE",
+            Martin = "CHAR_MARTIN",
+            MaryAnn = "CHAR_MARY_ANN",
+            Maude = "CHAR_MAUDE",
+            Mechanic = "CHAR_MECHANIC",
+            Michael = "CHAR_MICHAEL",
+            MichaelFranklin = "CHAR_MIKE_FRANK_CONF",
+            MichaelTrevor = "CHAR_MIKE_TREV_CONF",
+            WarStock = "CHAR_MILSITE",
+            Minotaur = "CHAR_MINOTAUR",
+            Molly = "CHAR_MOLLY",
+            MorsMutual = "CHAR_MP_MORS_MUTUAL",
+            ArmyContact = "CHAR_MP_ARMY_CONTACT",
+            Brucie = "CHAR_MP_BRUCIE",
+            FibContact = "CHAR_MP_FIB_CONTACT",
+            RockStarLogo = "CHAR_MP_FM_CONTACT",
+            Gerald = "CHAR_MP_GERALD",
+            Julio = "CHAR_MP_JULIO",
+            MechanicChinese = "CHAR_MP_MECHANIC",
+            MerryWeather = "CHAR_MP_MERRYWEATHER",
+            Unicorn = "CHAR_MP_STRIPCLUB_PR",
+            Mom = "CHAR_MRS_THORNHILL",
+            MrsThornhill = "CHAR_MRS_THORNHILL",
+            PatriciaTrevor = "CHAR_PATRICIA",
+            PegasusDelivery = "CHAR_PEGASUS_DELIVERY",
+            ElitasTravel = "CHAR_PLANESITE",
+            Sasquatch = "CHAR_SASQUATCH",
+            Simeon = "CHAR_SIMEON",
+            SocialClub = "CHAR_SOCIAL_CLUB",
+            Solomon = "CHAR_SOLOMON",
+            Taxi = "CHAR_TAXI",
+            Trevor = "CHAR_TREVOR",
+            YouTube = "CHAR_YOUTUBE",
+            Wade = "CHAR_WADE",
+        }
+    }
+    return setmetatable(_notif, Notifications)
+end
 
 ---Hide the notification
 ---@return nil
@@ -159,7 +174,7 @@ end
 function Notifications:ShowNotification(msg, blink, showInBrief)
     AddTextEntry("ScaleformUINotification", msg)
     BeginTextCommandThefeedPost("ScaleformUINotification")
-    self._handle = EndTextCommandThefeedPostTicker(blink, showInBrief)
+    EndTextCommandThefeedPostTicker(blink, showInBrief)
 end
 
 ---Show a notification with a color
@@ -172,7 +187,7 @@ function Notifications:ShowNotificationWithColor(msg, color, blink, showInBrief)
     AddTextEntry("ScaleformUINotification", msg)
     BeginTextCommandThefeedPost("ScaleformUINotification")
     ThefeedSetNextPostBackgroundColor(color)
-    self._handle = EndTextCommandThefeedPostTicker(blink, showInBrief)
+    EndTextCommandThefeedPostTicker(blink, showInBrief)
 end
 
 ---Show a help notification
@@ -193,13 +208,15 @@ end
 ---Show a floating help notification
 ---@param msg string @The message
 ---@param coords vector3 @The coordinates of the notification
+---@param duration number @The display duration in milliseconds (-1 for infinite)
 ---@return nil
-function Notifications:ShowFloatingHelpNotification(msg, coords)
+function Notifications:ShowFloatingHelpNotification(msg, coords, duration)
+    if (duration == nil) then duration = -1 end
     AddTextEntry("ScaleformUIFloatingHelpText", msg)
-    SetFloatingHelpTextWorldPosition(1, coords)
+    SetFloatingHelpTextWorldPosition(1, coords.x, coords.y, coords.z)
     SetFloatingHelpTextStyle(1, 1, 2, -1, 3, 0)
     BeginTextCommandDisplayHelp("ScaleformUIFloatingHelpText")
-    EndTextCommandDisplayHelp(2, false, false, -1)
+    EndTextCommandDisplayHelp(2, false, false, duration)
 end
 
 ---Show an advanced notification
@@ -207,6 +224,7 @@ end
 ---@param subtitle string @The subtitle
 ---@param text string @The body of the nofitication
 ---@param characterIcon string @The character to be displayed in the notification, use the NotificationCharacters
+---@param notificationIcon NotificationIcon @The icon
 ---@param backgroundColour Colours @The background color
 ---@param flashColour {R:number, G:number, B:number, A:number} @The flash color (RGBA)
 ---@param blink boolean @Should the notification blink?
@@ -217,11 +235,12 @@ end
 ---@see Colours
 ---@see NotificationType
 ---@return nil
-function Notifications:ShowAdvancedNotification(title, subtitle, text, characterIcon, backgroundColour,
+function Notifications:ShowAdvancedNotification(title, subtitle, text, characterIcon, notificationIcon, backgroundColour,
                                                 flashColour, blink, notificationType,
                                                 sound)
     if (notificationType == nil) then notificationType = self.Type.Default end
     if (characterIcon == nil) then characterIcon = self.IconChars.Default end
+    if (notificationIcon == nil) then notificationIcon = self.NotificationIcon.Default end
     if (backgroundColour == nil) then backgroundColour = -1 end
     if (blink == nil) then blink = false end
     AddTextEntry("ScaleformUIAdvancedNotification", text)
@@ -234,7 +253,7 @@ function Notifications:ShowAdvancedNotification(title, subtitle, text, character
         ThefeedSetAnimpostfxColor(flashColour.R, flashColour.G, flashColour.B, flashColour.A)
     end
     if (sound) then PlaySoundFrontend(-1, "DELETE", "HUD_DEATHMATCH_SOUNDSET", true); end
-    self._handle = EndTextCommandThefeedPostMessagetext(characterIcon, characterIcon, true, notificationType, title, subtitle)
+    return EndTextCommandThefeedPostMessagetext(characterIcon, characterIcon, true, notificationType, title, subtitle)
 end
 
 -- TODO: Investigate if newProgress should be a boolean or a number for EndTextCommandThefeedPostStats
@@ -256,31 +275,29 @@ function Notifications:ShowStatNotification(newProgress, oldProgress, title, bli
     AddTextComponentInteger(newProgress)
     ---@diagnostic disable-next-line: param-type-mismatch -- newProgress is a number but the native wants a boolean
     EndTextCommandThefeedPostStats("ScaleformUIStatsNotification", 2, newProgress, oldProgress, false, txd, txd)
-    self._handle = EndTextCommandThefeedPostTicker(blink, showInBrief)
+    EndTextCommandThefeedPostTicker(blink, showInBrief)
     UnregisterPedheadshot(handle)
 end
 
 ---Show a versuses notification (2 heads)
----@param leftPed number @The first ped
----@param leftScore number @The score of the first ped
----@param leftColor Colours @The color of the first ped
----@param rightPed number @The second ped
----@param rightScore number @The score of the second ped
----@param rightColor Colours @The color of the second ped
+---@param ped1 number @The first ped
+---@param ped2 number @The second ped
+---@param color1 Colours @The color of the first ped
+---@param color2 Colours @The color of the second ped
 ---@see Colours
 ---@return nil
-function Notifications:ShowVSNotification(leftPed, leftScore, leftColor, rightPed, rightScore, rightColor)
-    local handle_1 = RegisterPedheadshot(leftPed)
+function Notifications:ShowVSNotification(ped1, ped2, color1, color2)
+    local handle_1 = RegisterPedheadshot(ped1)
     while not IsPedheadshotReady(handle_1) or not IsPedheadshotValid(handle_1) do Citizen.Wait(0) end
     local txd_1 = GetPedheadshotTxdString(handle_1)
 
-    local handle_2 = RegisterPedheadshot(rightPed)
+    local handle_2 = RegisterPedheadshot(ped2)
     while not IsPedheadshotReady(handle_2) or not IsPedheadshotValid(handle_2) do Citizen.Wait(0) end
     local txd_2 = GetPedheadshotTxdString(handle_2)
 
     BeginTextCommandThefeedPost("")
     ---@diagnostic disable-next-line: redundant-parameter -- This is a bug in the linter
-    self._handle = EndTextCommandThefeedPostVersusTu(txd_1, txd_1, leftScore, txd_2, txd_2, rightScore, leftColor, rightColor)
+    EndTextCommandThefeedPostVersusTu(txd_1, txd_1, 12, txd_2, txd_2, 1, color1, color2)
 
     UnregisterPedheadshot(handle_1)
     UnregisterPedheadshot(handle_2)
@@ -332,8 +349,8 @@ function Notifications:DrawText(x, y, text, color, font, textAlignment, shadow, 
     if (color == nil) then color = { r = 255, g = 255, b = 255, a = 255 } end
     if (font == nil) then font = 4 end
     if (textAlignment == nil) then textAlignment = 1 end
-    if (shadow == nil) then shadow = true end
-    if (outline == nil) then outline = true end
+    if (shadow == nil) then shadow = false end
+    if (outline == nil) then outline = false end
     if (wrap == nil) then wrap = 0 end
 
     local screenw, screenh = GetActiveScreenResolution()

@@ -1,10 +1,10 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using CitizenFX.Core.UI;
-using ScaleformUI.Menu;
+using ScaleformUI.Scaleforms;
 using System.Drawing;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI
 {
     public enum PadCheck
     {
@@ -202,15 +202,30 @@ namespace ScaleformUI.Scaleforms
     {
         internal ScaleformWideScreen _sc;
         private bool _useMouseButtons;
+        private bool _enabled = false;
         internal bool _isUsingKeyboard;
         internal bool _changed = true;
         internal int savingTimer = 0;
         private bool _isSaving = false;
 
-        public InstructionalButtonsScaleform()
+        /// <summary>
+        /// Show or Hide the Instructional Buttons
+        /// </summary>
+        public bool Enabled
         {
-            Load();
+            get => _enabled;
+            set
+            {
+                if (!value)
+                {
+                    _sc.CallFunction("CLEAR_ALL");
+                    _sc.CallFunction("CLEAR_RENDER");
+                }
+                _enabled = value;
+                _changed = true;
+            }
         }
+
         /// <summary>
         /// If you set this to true the user will see the mouse cursor on screen
         /// </summary>
@@ -234,8 +249,8 @@ namespace ScaleformUI.Scaleforms
             if (_sc != null) return;
             _sc = new ScaleformWideScreen("INSTRUCTIONAL_BUTTONS");
             int timeout = 1000;
-            int start = Main.GameTime;
-            while (!_sc.IsLoaded && Main.GameTime - start < timeout) await BaseScript.Delay(0);
+            int start = ScaleformUI.GameTime;
+            while (!_sc.IsLoaded && ScaleformUI.GameTime - start < timeout) await BaseScript.Delay(0);
         }
 
         /// <summary>
@@ -300,8 +315,6 @@ namespace ScaleformUI.Scaleforms
         {
             ControlButtons.Clear();
             _changed = true;
-            _sc.CallFunction("CLEAR_ALL");
-            _sc.CallFunction("CLEAR_RENDER");
         }
 
 
@@ -315,9 +328,9 @@ namespace ScaleformUI.Scaleforms
         {
             _isSaving = true;
             _changed = true;
-            savingTimer = Main.GameTime;
+            savingTimer = ScaleformUI.GameTime;
             Screen.LoadingPrompt.Show(text, spinnerType);
-            while (Main.GameTime - savingTimer <= time) await BaseScript.Delay(100);
+            while (ScaleformUI.GameTime - savingTimer <= time) await BaseScript.Delay(100);
             Screen.LoadingPrompt.Hide();
             _isSaving = false;
         }
@@ -331,7 +344,7 @@ namespace ScaleformUI.Scaleforms
         {
             _isSaving = true;
             _changed = true;
-            savingTimer = Main.GameTime;
+            savingTimer = ScaleformUI.GameTime;
             Screen.LoadingPrompt.Show(text, spinnerType);
         }
 
@@ -363,7 +376,7 @@ namespace ScaleformUI.Scaleforms
                 {
                     if (button.PadCheck == PadCheck.Keyboard) continue;
                     gamepadButtons.Add(button);
-                    if (Main.Warning.IsShowing || Main.Warning.IsShowingWithButtons)
+                    if (ScaleformUI.Warning.IsShowing || ScaleformUI.Warning.IsShowingWithButtons)
                         _sc.CallFunction("SET_DATA_SLOT", count, button.GetButtonId(), button.Text, 0, -1);
                     else
                         _sc.CallFunction("SET_DATA_SLOT", count, button.GetButtonId(), button.Text);
@@ -376,7 +389,7 @@ namespace ScaleformUI.Scaleforms
                         _sc.CallFunction("SET_DATA_SLOT", count, button.GetButtonId(), button.Text, 1, (int)button.KeyboardButton);
                     else
                     {
-                        if (Main.Warning.IsShowing || Main.Warning.IsShowingWithButtons)
+                        if (ScaleformUI.Warning.IsShowing || ScaleformUI.Warning.IsShowingWithButtons)
                             _sc.CallFunction("SET_DATA_SLOT", count, button.GetButtonId(), button.Text, 0, -1);
                         else
                             _sc.CallFunction("SET_DATA_SLOT", count, button.GetButtonId(), button.Text);
@@ -395,7 +408,6 @@ namespace ScaleformUI.Scaleforms
         /// </summary>
         public void Draw()
         {
-            API.SetScriptGfxDrawBehindPausemenu(true);
             _sc.Render2D();
         }
 
@@ -410,9 +422,6 @@ namespace ScaleformUI.Scaleforms
 
         internal void Update()
         {
-            if (_sc == null)
-                Load();
-            if (ControlButtons.Count == 0) return;
             if (API.IsUsingKeyboard(2))
             {
                 if (!_isUsingKeyboard)
@@ -432,7 +441,7 @@ namespace ScaleformUI.Scaleforms
 
             UpdateButtons();
 
-            if (!Main.Warning.IsShowing || Main.Warning.IsShowingWithButtons) Draw();
+            if (!ScaleformUI.Warning.IsShowing || ScaleformUI.Warning.IsShowingWithButtons) Draw();
 
             foreach (InstructionalButton button in keyboardButtons)
             {
@@ -453,7 +462,7 @@ namespace ScaleformUI.Scaleforms
         public static bool IsControlJustPressed(Control control, PadCheck keyboardOnly = PadCheck.Any) => Game.IsControlJustPressed(2, control) && (keyboardOnly == PadCheck.Keyboard ? API.IsUsingKeyboard(2) : keyboardOnly != PadCheck.Controller || !API.IsUsingKeyboard(2));
 
         /// <summary>
-        /// Updates the instructional button.
+        /// Updates the instructional button text.
         /// </summary>
         public void ForceUpdate() => _changed = true;
     }

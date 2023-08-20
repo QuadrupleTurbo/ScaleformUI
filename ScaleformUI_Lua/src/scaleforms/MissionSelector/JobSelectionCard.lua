@@ -39,9 +39,7 @@ function JobSelectionCard.New(title, description, txd, txn, rpMult, cashMult, ic
         Icon = icon,
         IconColor = iconColor,
         ApMultiplier = apMultiplier,
-        Details = details,
-        OnCardPressed = function()
-        end,
+        Details = details
     }
     return setmetatable(data, JobSelectionCard)
 end

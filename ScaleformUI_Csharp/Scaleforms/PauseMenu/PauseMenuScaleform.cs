@@ -1,9 +1,8 @@
 ﻿using CitizenFX.Core;
-using ScaleformUI.Elements;
-using ScaleformUI.Menu;
+using ScaleformUI.Scaleforms;
 using static CitizenFX.Core.Native.API;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI
 {
     public class PauseMenuScaleform
     {
@@ -100,7 +99,7 @@ namespace ScaleformUI.Scaleforms
             _pause.CallFunction("ADD_RIGHT_TITLE", tab, leftItem, title);
         }
 
-        public void AddRightListLabel(int tab, int leftItem, string label, string fontName, int fontId)
+        public void AddRightListLabel(int tab, int leftItem, string label)
         {
             AddTextEntry($"PauseMenu_{tab}_{leftItem}", label);
             BeginScaleformMovieMethod(_pause.Handle, "ADD_RIGHT_LIST_ITEM");
@@ -109,19 +108,17 @@ namespace ScaleformUI.Scaleforms
             ScaleformMovieMethodAddParamInt(0);
             BeginTextCommandScaleformString($"PauseMenu_{tab}_{leftItem}");
             EndTextCommandScaleformString_2();
-            ScaleformMovieMethodAddParamPlayerNameString(fontName);
-            ScaleformMovieMethodAddParamInt(fontId);
             EndScaleformMovieMethod();
         }
 
-        public void AddRightStatItemLabel(int tab, int leftItem, string label, string rightLabel, ItemFont labelFont, ItemFont rLabelFont)
+        public void AddRightStatItemLabel(int tab, int leftItem, string label, string rightLabel)
         {
-            _pause.CallFunction("ADD_RIGHT_LIST_ITEM", tab, leftItem, 1, 0, label, rightLabel, -1, labelFont.FontName, labelFont.FontID, rLabelFont.FontName, rLabelFont.FontID);
+            _pause.CallFunction("ADD_RIGHT_LIST_ITEM", tab, leftItem, 1, 0, label, rightLabel);
         }
 
-        public void AddRightStatItemColorBar(int tab, int leftItem, string label, int value, HudColor barColor, ItemFont labelFont)
+        public void AddRightStatItemColorBar(int tab, int leftItem, string label, int value, HudColor barColor)
         {
-            _pause.CallFunction("ADD_RIGHT_LIST_ITEM", tab, leftItem, 1, 1, label, value, (int)barColor, labelFont.FontName, labelFont.FontID);
+            _pause.CallFunction("ADD_RIGHT_LIST_ITEM", tab, leftItem, 1, 1, label, value, (int)barColor);
         }
 
         public void AddRightSettingsBaseItem(int tab, int leftItem, string label, string rightLabel, bool enabled)
@@ -225,9 +222,9 @@ namespace ScaleformUI.Scaleforms
         {
             BeginScaleformMovieMethod(_pause.Handle, "SET_INPUT_EVENT");
             ScaleformMovieMethodAddParamInt(direction);
-            int ret = EndScaleformMovieMethodReturnValue();
+            var ret = EndScaleformMovieMethodReturnValue();
             while (!IsScaleformMovieMethodReturnValueReady(ret)) await BaseScript.Delay(0);
-            string res = GetScaleformMovieFunctionReturnString(ret);
+            var res = GetScaleformMovieFunctionReturnString(ret);
             return res;
         }
 
@@ -238,17 +235,17 @@ namespace ScaleformUI.Scaleforms
         public async Task<string> SendClickEvent()
         {
             BeginScaleformMovieMethod(_pause.Handle, "MOUSE_CLICK_EVENT");
-            int ret = EndScaleformMovieMethodReturnValue();
+            var ret = EndScaleformMovieMethodReturnValue();
             while (!IsScaleformMovieMethodReturnValueReady(ret)) await BaseScript.Delay(0);
-            string res = GetScaleformMovieFunctionReturnString(ret);
+            var res = GetScaleformMovieFunctionReturnString(ret);
             return res;
         }
 
         public void Dispose()
         {
-            _pause?.CallFunction("CLEAR_ALL");
-            _lobby?.CallFunction("CLEAR_ALL");
-            _header?.CallFunction("CLEAR_ALL");
+            _pause.CallFunction("CLEAR_ALL");
+            _lobby.CallFunction("CLEAR_ALL");
+            _header.CallFunction("CLEAR_ALL");
             _visible = false;
         }
 
@@ -256,6 +253,7 @@ namespace ScaleformUI.Scaleforms
         {
             if (_visible && GetCurrentFrontendMenuVersion() == -2060115030)
             {
+
                 SetScriptGfxDrawBehindPausemenu(true);
                 DrawScaleformMovie(_header.Handle, 0.501f, 0.162f, 0.6782f, 0.145f, 255, 255, 255, 255, 0);
                 if (!isLobby)

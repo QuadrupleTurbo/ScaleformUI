@@ -1,5 +1,4 @@
 ﻿using CitizenFX.Core.UI;
-using ScaleformUI.Elements;
 using System.Drawing;
 using Font = CitizenFX.Core.UI.Font;
 

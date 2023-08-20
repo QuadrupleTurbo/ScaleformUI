@@ -1,5 +1,5 @@
 ---@diagnostic disable: missing-parameter
-local pool = MenuHandler.New()
+local pool = MenuPool.New()
 PlayerMenu = nil
 local currentColumnId = 1
 local currentSelectId = 1
@@ -246,6 +246,7 @@ AddEventHandler("ScaleformUI_Lua:playermenu:Show", function(FocusLevel, canclose
     PlayerMenu:CanPlayerCloseMenu(canclose)
     PlayerMenu:Visible(true)
     PlayerMenu:FocusLevel(FocusLevel)
+    ScaleformUI.Scaleforms.InstructionalButtons:Enabled(false)
 
     local instructional_buttons = Scaleform.Request("instructional_buttons")
     instructional_buttons:CallFunction("CLEAR_ALL")

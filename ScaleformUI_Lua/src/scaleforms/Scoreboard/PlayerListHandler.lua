@@ -1,19 +1,4 @@
-PlayerListScoreboard = setmetatable({
-    _uptime = 8000,
-    _start = 0,
-    _timer = 0,
-    _sc = nil,
-    Enabled = false,
-    Index = 0,
-    MaxPages = 1,
-    currentPage = 0,
-    PlayerRows = {},
-    TitleLeftText = "",
-    TitleRightText = "",
-    TitleIcon = 0,
-    X = 0.122,
-    Y = 0.3
-}, PlayerListScoreboard)
+PlayerListScoreboard = setmetatable({}, PlayerListScoreboard)
 PlayerListScoreboard.__index = PlayerListScoreboard
 PlayerListScoreboard.__call = function()
     return "PlayerListScoreboard"
@@ -43,6 +28,28 @@ end
 ---@field public Load fun(self:PlayerListScoreboard):nil
 ---@field public SetTitle fun(self:PlayerListScoreboard, title:string, label:string, icon:number):nil
 ---@field public SetPosition fun(self:PlayerListScoreboard, x:number, y:number):nil
+
+---Creates a new PlayerListScoreboard instance
+---@return PlayerListScoreboard
+function PlayerListScoreboard.New()
+    local data = {
+        _uptime = 8000,
+        _start = 0,
+        _timer = 0,
+        _sc = nil,
+        Enabled = false,
+        Index = 0,
+        MaxPages = 1,
+        currentPage = 0,
+        PlayerRows = {},
+        TitleLeftText = "",
+        TitleRightText = "",
+        TitleIcon = 0,
+        X = 0.122,
+        Y = 0.3
+    }
+    return setmetatable(data, PlayerListScoreboard)
+end
 
 ---Current page of the scoreboard
 ---@param _c number?
@@ -140,8 +147,6 @@ end
 
 ---Draw the scoreboard on the screen
 function PlayerListScoreboard:Update()
-    if self._sc == nil or not self.Enabled then return end
-    ScaleformUI.WaitTime = 0
     self._sc:Render2DNormal(self.X, self.Y, 0.28, 0.6)
     if self._start ~= 0 and GlobalGameTimer - self._start > self._timer then
         self:CurrentPage(0)

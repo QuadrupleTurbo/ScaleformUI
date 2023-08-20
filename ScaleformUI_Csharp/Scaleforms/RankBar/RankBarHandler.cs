@@ -1,7 +1,7 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI.Scaleforms.RankBar
 {
     public class RankBarHandler
     {
@@ -25,11 +25,11 @@ namespace ScaleformUI.Scaleforms
 
         public async Task Load()
         {
-            int timeout = 1000;
+            var timeout = 1000;
 
-            int start = Main.GameTime;
+            int start = ScaleformUI.GameTime;
             API.RequestHudScaleform(HUD_COMPONENT_ID);
-            while (!API.HasHudScaleformLoaded(HUD_COMPONENT_ID) && Main.GameTime - start < timeout)
+            while (!API.HasHudScaleformLoaded(HUD_COMPONENT_ID) && ScaleformUI.GameTime - start < timeout)
             {
                 await BaseScript.Delay(0);
             }

@@ -1,22 +1,4 @@
-MissionSelectorHandler = setmetatable({
-    _sc = nil,
-    _start = 0,
-    _timer = 0,
-    enabled = false,
-    alreadyVoted = false,
-    Votes = { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    VotedFor = -1,
-    MaxVotes = 0,
-    SelectedCard = 1,
-    VotesColor = Colours.HUD_COLOUR_BLUE,
-    JobTitle = {
-        Title = "",
-        Label = "",
-        Votes = "",
-    },
-    Cards = {},
-    Buttons = {},
-}, MissionSelectorHandler)
+MissionSelectorHandler = setmetatable({}, MissionSelectorHandler)
 MissionSelectorHandler.__index = MissionSelectorHandler
 MissionSelectorHandler.__call = function()
     return "MissionSelectorHandler"
@@ -49,6 +31,31 @@ end
 ---@field public ShowPlayerVote fun(self:MissionSelectorHandler, card:number, playerName:string, colour:Colours, showCheckmark:boolean, flashBackground:boolean):nil
 ---@field public Load fun(self:MissionSelectorHandler):nil
 ---@field public Update fun(self:MissionSelectorHandler):nil
+
+---Creates a new MissionSelectorHandler object
+---@return MissionSelectorHandler
+function MissionSelectorHandler.New()
+    local data = {
+        _sc = nil,
+        _start = 0,
+        _timer = 0,
+        enabled = false,
+        alreadyVoted = false,
+        Votes = { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+        VotedFor = -1,
+        MaxVotes = 0,
+        SelectedCard = 1,
+        VotesColor = Colours.HUD_COLOUR_BLUE,
+        JobTitle = {
+            Title = "",
+            Label = "",
+            Votes = "",
+        },
+        Cards = {},
+        Buttons = {},
+    }
+    return setmetatable(data, MissionSelectorHandler)
+end
 
 ---Sets the title of the mission selector
 ---@param title string
@@ -198,8 +205,6 @@ local success, event_type, context, item_id
 
 ---Updates the mission selector
 function MissionSelectorHandler:Update()
-    if self._sc == nil or not self.enabled then return end
-    ScaleformUI.WaitTime = 0
     self._sc:Render2D()
     DisableAllControlActions(0)
     DisableAllControlActions(1)
@@ -221,7 +226,6 @@ function MissionSelectorHandler:Update()
                     return
                 else
                     if self.SelectedCard <= 6 then
-                        local card = self.Cards[self.SelectedCard]
                         if self.alreadyVoted then
                             local old = self.VotedFor
                             self.Votes[self.VotedFor] = self.Votes[self.VotedFor] - 1
@@ -236,7 +240,6 @@ function MissionSelectorHandler:Update()
                             self.Votes[self.VotedFor] = self.Votes[self.VotedFor] + 1
                             self:UpdateOwnVote(self.VotedFor, -1)
                         end
-                        card.OnCardPressed()
                     else
                         local btn = self.Buttons[self.SelectedCard - 6]
                         if btn.Selectable then
@@ -284,7 +287,6 @@ function MissionSelectorHandler:Update()
         end
     elseif IsDisabledControlJustPressed(2, 201) then
         if self.SelectedCard <= 6 then
-            local card = self.Cards[self.SelectedCard]
             if self.alreadyVoted then
                 local old = self.VotedFor
                 self.Votes[self.VotedFor] = self.Votes[self.VotedFor] - 1
@@ -299,7 +301,6 @@ function MissionSelectorHandler:Update()
                 self.Votes[self.VotedFor] = self.Votes[self.VotedFor] + 1
                 self:UpdateOwnVote(self.VotedFor, -1)
             end
-            card.OnCardPressed()
         else
             local btn = self.Buttons[self.SelectedCard - 6]
             if btn.Selectable then

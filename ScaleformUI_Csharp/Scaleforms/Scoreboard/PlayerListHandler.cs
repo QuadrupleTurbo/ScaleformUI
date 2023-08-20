@@ -1,7 +1,8 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using ScaleformUI.Scaleforms;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI
 {
     public class PlayerListHandler
     {
@@ -46,9 +47,9 @@ namespace ScaleformUI.Scaleforms
         {
             if (_sc is not null) return;
             _sc = new ScaleformWideScreen("MP_MM_CARD_FREEMODE");
-            int timeout = 1000;
-            int start = Main.GameTime;
-            while (!_sc.IsLoaded && Main.GameTime - start < timeout) await BaseScript.Delay(0);
+            var timeout = 1000;
+            int start = ScaleformUI.GameTime;
+            while (!_sc.IsLoaded && ScaleformUI.GameTime - start < timeout) await BaseScript.Delay(0);
         }
         public void Dispose()
         {
@@ -81,7 +82,7 @@ namespace ScaleformUI.Scaleforms
 
         public void RemoveRow(PlayerRow row)
         {
-            PlayerRow r = PlayerRows.FirstOrDefault(x => x.ServerId == row.ServerId);
+            var r = PlayerRows.FirstOrDefault(x => x.ServerId == row.ServerId);
             if (r != null)
             {
                 PlayerRows.Remove(r);
@@ -92,7 +93,7 @@ namespace ScaleformUI.Scaleforms
 
         public void RemoveRow(int serverId)
         {
-            PlayerRow r = PlayerRows.FirstOrDefault(x => x.ServerId == serverId);
+            var r = PlayerRows.FirstOrDefault(x => x.ServerId == serverId);
             if (r != null)
             {
                 PlayerRows.Remove(r);
@@ -127,7 +128,7 @@ namespace ScaleformUI.Scaleforms
         internal void Update()
         {
             API.DrawScaleformMovie(_sc.Handle, 0.122f, 0.3f, 0.28f, 0.6f, 255, 255, 255, 255, 0);
-            if (_start != 0 && Main.GameTime - _start > _timer)
+            if (_start != 0 && ScaleformUI.GameTime - _start > _timer)
             {
                 CurrentPage = 0;
                 Enabled = false;
@@ -140,7 +141,7 @@ namespace ScaleformUI.Scaleforms
         public void NextPage()
         {
             UpdateMaxPages();
-            _start = Main.GameTime;
+            _start = ScaleformUI.GameTime;
             _timer = 8000;
             BuildMenu();
             if (CurrentPage > MaxPages)
@@ -164,7 +165,7 @@ namespace ScaleformUI.Scaleforms
         }
         public void UpdateSlot(PlayerRow row)
         {
-            PlayerRow r = PlayerRows.FirstOrDefault(x => Convert.ToInt32(x.RightText) == Convert.ToInt32(row.RightText));
+            var r = PlayerRows.FirstOrDefault(x => Convert.ToInt32(x.RightText) == Convert.ToInt32(row.RightText));
             //var r = PlayerRows.FirstOrDefault(x => x.ServerId == row.ServerId);
             if (r != null)
             {
@@ -178,7 +179,7 @@ namespace ScaleformUI.Scaleforms
 
         public void SetIcon(int index, ScoreRightIconType icon, string txt)
         {
-            PlayerRow row = PlayerRows[index];
+            var row = PlayerRows[index];
             if (row != null)
             {
                 _sc.CallFunction("SET_ICON", index, (int)icon, txt);
@@ -192,7 +193,7 @@ namespace ScaleformUI.Scaleforms
             _sc.CallFunction("SET_DATA_SLOT_EMPTY");
             _sc.CallFunction("SET_TITLE", TitleLeftText, TitleRightText, TitleIcon);
             Index = 0;
-            foreach (PlayerRow row in PlayerRows)
+            foreach (var row in PlayerRows)
             {
                 if (IsRowSupposedToShow(Index))
                     rows.Add(row);
@@ -200,7 +201,7 @@ namespace ScaleformUI.Scaleforms
             }
 
             Index = 0;
-            foreach (PlayerRow row in rows)
+            foreach (var row in rows)
             {
                 if (string.IsNullOrWhiteSpace(row.CrewLabelText))
                     _sc.CallFunction("SET_DATA_SLOT", Index, row.RightText, row.Name, row.Color, (int)row.RightIcon, row.IconOverlayText, row.JobPointsText, "", (int)row.JobPointsDisplayType, row.TextureString, row.TextureString, row.FriendType);

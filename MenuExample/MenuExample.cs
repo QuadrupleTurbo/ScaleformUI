@@ -4,10 +4,7 @@ using CitizenFX.Core.UI;
 using ScaleformUI;
 using ScaleformUI.Elements;
 using ScaleformUI.LobbyMenu;
-using ScaleformUI.Menu;
 using ScaleformUI.PauseMenu;
-using ScaleformUI.Radial;
-using ScaleformUI.Scaleforms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,34 +15,32 @@ public class MenuExample : BaseScript
 {
     private bool enabled = true;
     private string dish = "Banana";
+    private MenuPool _menuPool;
     private TimerBarPool _timerBarPool;
     private long txd;
     private Random Random = new Random(API.GetGameTimer());
 
-    #region UIMenu
     public void ExampleMenu()
     {
         long _titledui = API.CreateDui("https://i.imgur.com/3yrFYbF.gif", 288, 130);
         API.CreateRuntimeTextureFromDuiHandle(txd, "bannerbackground", API.GetDuiHandle(_titledui));
 
-        // first true means add menu Glare scaleform to the menu
-        // last true means it's using the alternative title style
-        UIMenu exampleMenu = new UIMenu("ScaleformUI", "ScaleformUI ~o~SHOWCASE", new PointF(20, 20), "scaleformui", "bannerbackground", true, true);
+        UIMenu exampleMenu = new UIMenu("ScaleformUI", "ScaleformUI SHOWCASE", new PointF(20, 20), "scaleformui", "bannerbackground", true, true); // true means add menu Glare scaleform to the menu
         exampleMenu.MaxItemsOnScreen = 7; // To decide max items on screen at time, default 7
+        exampleMenu.BuildAsync = true; // set to false might freeze the game a couple of milliseconds to load high N items menus. (default true)
         exampleMenu.BuildingAnimation = MenuBuildingAnimation.LEFT_RIGHT;
         exampleMenu.AnimationType = MenuAnimationType.BACK_INOUT;
-        exampleMenu.ScrollingType = ScrollingType.CLASSIC;
-        exampleMenu.Enabled3DAnimations = false;
         //exampleMenu.CounterColor = HudColor.HUD_COLOUR_PINK;
         // let's add the menu to the Pool
+        _menuPool.Add(exampleMenu);
 
         #region Menu Declaration
 
         #region Big Message
 
-        UIMenuItem bigMessageItem = new UIMenuItem("~g~Big ~w~Message ~r~Examples", "Select me to switch to the BigMessage menu!");
         UIMenu uiMenuBigMessage = new UIMenu("Big Message", "Big Message");
-        exampleMenu.AddItem(bigMessageItem);
+        exampleMenu.AddSubMenu(uiMenuBigMessage, "Big Message Examples");
+
         UIMenuListItem uiListBigMessageTransition = new UIMenuListItem("Big Message", new List<dynamic>() { "TRANSITION_OUT", "TRANSITION_UP", "TRANSITION_DOWN" }, 0);
         uiListBigMessageTransition.Description = "Transition type for the big message when disposing";
         uiMenuBigMessage.AddItem(uiListBigMessageTransition);
@@ -78,7 +73,7 @@ public class MenuExample : BaseScript
             if (item == uiItemBigMessageDispose)
             {
                 if (uiCheckboxBigMessageManualDispose.Checked)
-                    ScaleformUI.Main.BigMessageInstance.Dispose();
+                    ScaleformUI.ScaleformUI.BigMessageInstance.Dispose();
             }
         };
 
@@ -89,13 +84,13 @@ public class MenuExample : BaseScript
                 switch (index)
                 {
                     case 0:
-                        ScaleformUI.Main.BigMessageInstance.Transition = "TRANSITION_OUT";
+                        ScaleformUI.ScaleformUI.BigMessageInstance.Transition = "TRANSITION_OUT";
                         break;
                     case 1:
-                        ScaleformUI.Main.BigMessageInstance.Transition = "TRANSITION_UP";
+                        ScaleformUI.ScaleformUI.BigMessageInstance.Transition = "TRANSITION_UP";
                         break;
                     case 2:
-                        ScaleformUI.Main.BigMessageInstance.Transition = "TRANSITION_Down";
+                        ScaleformUI.ScaleformUI.BigMessageInstance.Transition = "TRANSITION_Down";
                         break;
                 }
             }
@@ -104,52 +99,48 @@ public class MenuExample : BaseScript
                 switch (index)
                 {
                     case 0:
-                        ScaleformUI.Main.BigMessageInstance.ShowMissionPassedMessage("Mission Passed", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowMissionPassedMessage("Mission Passed", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 1:
-                        ScaleformUI.Main.BigMessageInstance.ShowColoredShard("Coloured Shard", "Showing the coloured shared", HudColor.HUD_COLOUR_WHITE, HudColor.HUD_COLOUR_FREEMODE, manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowColoredShard("Coloured Shard", "Showing the coloured shared", HudColor.HUD_COLOUR_WHITE, HudColor.HUD_COLOUR_FREEMODE, manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 2:
-                        ScaleformUI.Main.BigMessageInstance.ShowOldMessage("Old Message", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowOldMessage("Old Message", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 3:
-                        ScaleformUI.Main.BigMessageInstance.ShowSimpleShard("Simple Shard", "Showing the simple shard", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowSimpleShard("Simple Shard", "Showing the simple shard", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 4:
-                        ScaleformUI.Main.BigMessageInstance.ShowRankupMessage("Rank Up", "Showing the rank up message", 10, manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowRankupMessage("Rank Up", "Showing the rank up message", 10, manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 5:
-                        ScaleformUI.Main.BigMessageInstance.ShowMpMessageLarge("MP Message Large", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowMpMessageLarge("MP Message Large", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 6:
-                        ScaleformUI.Main.BigMessageInstance.ShowMpWastedMessage("MP Wasted Message", "Wasted", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowMpWastedMessage("MP Wasted Message", "Wasted", manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                     case 7:
                         const string CUSTOM_LABEL = "SCALEFORMUI_CUSTOM_LABEL";
                         API.AddTextEntry(CUSTOM_LABEL, "ScaleformUI is the best solution!");
                         ScaleformLabel scaleformLabel = CUSTOM_LABEL;
-                        ScaleformUI.Main.BigMessageInstance.ShowMissionPassedMessage(scaleformLabel, manualDispose: uiCheckboxBigMessageManualDispose.Checked);
+                        ScaleformUI.ScaleformUI.BigMessageInstance.ShowMissionPassedMessage(scaleformLabel, manualDispose: uiCheckboxBigMessageManualDispose.Checked);
                         break;
                 }
             }
         };
 
-        bigMessageItem.Activated += (menu, item) =>
-        {
-            menu.SwitchTo(uiMenuBigMessage, inheritOldMenuParams: true);
-        };
-
         #endregion
 
-        UIMenuCheckboxItem ketchupItem = new UIMenuCheckboxItem("~g~Scrolling animation enabled? ~b~in a very long label to ~o~test the text scrolling feature!", UIMenuCheckboxStyle.Tick, enabled, "Do you wish to enable the scrolling animation?");
+        #region Ketchup
+        UIMenuCheckboxItem ketchupItem = new UIMenuCheckboxItem("Scrolling animation enabled? in a very long label to test the text scrolling feature!", UIMenuCheckboxStyle.Tick, enabled, "Do you wish to enable the scrolling animation?");
         long _paneldui = API.CreateDui("https://i.imgur.com/mH0Y65C.gif", 288, 160);
         API.CreateRuntimeTextureFromDuiHandle(txd, "panelbackground", API.GetDuiHandle(_paneldui));
         UIMissionDetailsPanel sidePanel = new UIMissionDetailsPanel(PanelSide.Right, "Side Panel", true, "scaleformui", "panelbackground");
-        UIFreemodeDetailsItem detailItem1 = new UIFreemodeDetailsItem("Left Label", "RIGHT LABEL", ScaleformFonts.SIGNPAINTER_HOUSESCRIPT, ScaleformFonts.GTAV_TAXI_DIGITAL, BadgeIcon.BRIEFCASE, HudColor.HUD_COLOUR_FREEMODE);
-        UIFreemodeDetailsItem detailItem2 = new UIFreemodeDetailsItem("Left Label", "RIGHT LABEL", ScaleformFonts.SIGNPAINTER_HOUSESCRIPT, ScaleformFonts.GTAV_TAXI_DIGITAL, BadgeIcon.STAR, HudColor.HUD_COLOUR_GOLD);
-        UIFreemodeDetailsItem detailItem3 = new UIFreemodeDetailsItem("Left Label", "RIGHT LABEL", ScaleformFonts.SIGNPAINTER_HOUSESCRIPT, ScaleformFonts.GTAV_TAXI_DIGITAL, BadgeIcon.ARMOR, HudColor.HUD_COLOUR_PURPLE);
-        UIFreemodeDetailsItem detailItem4 = new UIFreemodeDetailsItem("Left Label", "RIGHT LABEL", ScaleformFonts.SIGNPAINTER_HOUSESCRIPT, ScaleformFonts.GTAV_TAXI_DIGITAL, BadgeIcon.BRAND_DILETTANTE, HudColor.HUD_COLOUR_GREEN);
-        UIFreemodeDetailsItem detailItem5 = new UIFreemodeDetailsItem("Left Label", "RIGHT LABEL", ScaleformFonts.SIGNPAINTER_HOUSESCRIPT, ScaleformFonts.GTAV_TAXI_DIGITAL, BadgeIcon.COUNTRY_ITALY, HudColor.HUD_COLOUR_WHITE, true);
+        UIFreemodeDetailsItem detailItem1 = new UIFreemodeDetailsItem("Left Label", "Right Label", BadgeIcon.BRIEFCASE, HudColor.HUD_COLOUR_FREEMODE);
+        UIFreemodeDetailsItem detailItem2 = new UIFreemodeDetailsItem("Left Label", "Right Label", BadgeIcon.STAR, HudColor.HUD_COLOUR_GOLD);
+        UIFreemodeDetailsItem detailItem3 = new UIFreemodeDetailsItem("Left Label", "Right Label", BadgeIcon.ARMOR, HudColor.HUD_COLOUR_PURPLE);
+        UIFreemodeDetailsItem detailItem4 = new UIFreemodeDetailsItem("Left Label", "Right Label", BadgeIcon.BRAND_DILETTANTE, HudColor.HUD_COLOUR_GREEN);
+        UIFreemodeDetailsItem detailItem5 = new UIFreemodeDetailsItem("Left Label", "Right Label", BadgeIcon.COUNTRY_ITALY, HudColor.HUD_COLOUR_WHITE, true);
         sidePanel.AddItem(detailItem1);
         sidePanel.AddItem(detailItem2);
         sidePanel.AddItem(detailItem3);
@@ -158,11 +149,12 @@ public class MenuExample : BaseScript
         ketchupItem.AddSidePanel(sidePanel);
         ketchupItem.SetLeftBadge(BadgeIcon.STAR);
         exampleMenu.AddItem(ketchupItem);
+        #endregion
+
+        #region Cook
 
         UIMenuItem cookItem = new UIMenuItem("Cook! in a very long label to test the text scrolling feature!", "Cook the dish with the appropiate ingredients and ketchup.");
         cookItem.SetRightLabel("rightLabel");
-        cookItem.LabelFont = ScaleformFonts.ENGRAVERS_OLD_ENGLISH_MT_STD;
-        cookItem.RightLabelFont = ScaleformFonts.PRICEDOWN_GTAV_INT;
         exampleMenu.AddItem(cookItem);
         UIVehicleColourPickerPanel sidePanelB = new UIVehicleColourPickerPanel(PanelSide.Right, "ColorPicker");
         cookItem.AddSidePanel(sidePanelB);
@@ -171,14 +163,6 @@ public class MenuExample : BaseScript
         {
             Notifications.ShowNotification($"Vehicle Color: {(VehicleColor)value}");
             sidePanelB.Title = ((VehicleColor)value).ToString();
-        };
-
-        UIMenuListItem scrollType = new UIMenuListItem("Choose how this menu will scroll!", new List<dynamic>() { "CLASSIC", "PAGINATED", "ENDLESS" }, (int)exampleMenu.ScrollingType);
-        exampleMenu.AddItem(scrollType);
-
-        scrollType.OnListChanged += (item, index) =>
-        {
-            exampleMenu.ScrollingType = (ScrollingType)index;
         };
 
         UIMenuItem colorItem = new UIMenuItem("UIMenuItem with Colors", "~b~Look!!~r~I can be colored ~y~too!!~w~~n~Every item now supports custom colors!", HudColor.HUD_COLOUR_PURPLE, HudColor.HUD_COLOUR_PINK);
@@ -269,19 +253,20 @@ public class MenuExample : BaseScript
         statistics.UpdateStatistic(2, 100f);
         //and you can get / set their percentage
 
+        #endregion
 
         #region Windows SubMenu
-        UIMenuItem windowsItem = new UIMenuItem("Windows SubMenu item label", "this is the submenu binded item description");
-        windowsItem.SetRightLabel(">>>");
-        exampleMenu.AddItem(windowsItem);
         UIMenu windowSubmenu = new UIMenu("Windows Menu", "submenu description");
-
+        exampleMenu.AddSubMenu(windowSubmenu, "Windows SubMenu item label", "this is the submenu binded item description");
+        windowSubmenu.ParentItem.SetRightLabel(">>>");
         UIMenuHeritageWindow heritageWindow = new UIMenuHeritageWindow(0, 0);
         UIMenuDetailsWindow statsWindow = new UIMenuDetailsWindow("Parents resemblance", "Dad:", "Mom:", true, new List<UIDetailStat>());
         windowSubmenu.AddWindow(heritageWindow);
         windowSubmenu.AddWindow(statsWindow);
         List<dynamic> momfaces = new List<dynamic>() { "Hannah", "Audrey", "Jasmine", "Giselle", "Amelia", "Isabella", "Zoe", "Ava", "Camilla", "Violet", "Sophia", "Eveline", "Nicole", "Ashley", "Grace", "Brianna", "Natalie", "Olivia", "Elizabeth", "Charlotte", "Emma", "Misty" };
         List<dynamic> dadfaces = new List<dynamic>() { "Benjamin", "Daniel", "Joshua", "Noah", "Andrew", "Joan", "Alex", "Isaac", "Evan", "Ethan", "Vincent", "Angel", "Diego", "Adrian", "Gabriel", "Michael", "Santiago", "Kevin", "Louis", "Samuel", "Anthony", "Claude", "Niko", "John" };
+        List<dynamic> lista = new List<dynamic>();
+        for (int i = 0; i < 101; i++) lista.Add(i);
         UIMenuListItem mom = new UIMenuListItem("Mamma", momfaces, 0);
         UIMenuListItem dad = new UIMenuListItem("Papà", dadfaces, 0);
         UIMenuSliderItem newItem = new UIMenuSliderItem("Heritage Slider", "This is Useful on heritage", 100, 5, 50, true);
@@ -295,19 +280,11 @@ public class MenuExample : BaseScript
             new UIDetailStat(100-newItem.Value, HudColor.HUD_COLOUR_PINK),
             new UIDetailStat(newItem.Value, HudColor.HUD_COLOUR_FREEMODE),
         };
-
-        windowsItem.Activated += (sender, e) =>
-        {
-            sender.SwitchTo(windowSubmenu, inheritOldMenuParams: true);
-        };
         #endregion
 
         #region Scaleforms SubMenu
-        UIMenuItem scaleformItem = new UIMenuItem("Scaleforms Showdown", "Let's try them!");
-        scaleformItem.SetRightLabel(">>>");
-        exampleMenu.AddItem(scaleformItem);
 
-        UIMenu scaleformMenu = new("Scaleforms Showdown", "Let's try them!");
+        UIMenu scaleformMenu = _menuPool.AddSubMenu(exampleMenu, "Scaleforms Showdown");
         UIMenuItem showSimplePopup = new UIMenuItem("Show PopupWarning example", "You can customize it to your needs");
         UIMenuItem showPopupButtons = new UIMenuItem("Show PopupWarning with buttons", "It waits until a button has been pressed!");
         UIMenuListItem customInstr = new UIMenuListItem("SavingNotification", Enum.GetNames(typeof(LoadingSpinnerType)).Cast<dynamic>().ToList(), 0, "InstructionalButtons now give you the ability to dynamically edit, add, remove, customize your buttons, you can even use them outside the menu ~y~without having to run multiple instances of the same scaleform~w~, aren't you happy??");
@@ -321,21 +298,11 @@ public class MenuExample : BaseScript
         scaleformMenu.AddItem(bigMessage);
         scaleformMenu.AddItem(midMessage);
 
-        scaleformItem.Activated += (sender, args) =>
-        {
-            sender.SwitchTo(scaleformMenu, inheritOldMenuParams: true);
-        };
-
         #endregion
 
         #region Notifications SubMenu
 
-        UIMenuItem notificationsItem = new UIMenuItem("This item goes to the notifications", "Let's try them!");
-        notificationsItem.SetRightLabel(">>>");
-        exampleMenu.AddItem(notificationsItem);
-
-        UIMenu notificationsMenu = new("Notifications Showdown", "Let's try them!");
-
+        UIMenu notifications = _menuPool.AddSubMenu(exampleMenu, "Notifications Showdown");
         List<dynamic> colors = Enum.GetNames(typeof(NotificationColor)).ToList<dynamic>();
         colors.Add("Classic");
         List<dynamic> char_sprites = new List<dynamic>() { "Abigail", "Amanda", "Ammunation", "Andreas", "Antonia", "Ashley", "BankOfLiberty", "BankFleeca", "BankMaze", "Barry", "Beverly", "BikeSite", "BlankEntry", "Blimp", "Blocked", "BoatSite", "BrokenDownGirl", "BugStars", "Call911", "LegendaryMotorsport", "SSASuperAutos", "Castro", "ChatCall", "Chef", "Cheng", "ChengSenior", "Chop", "Cris", "Dave", "Default", "Denise", "DetonateBomb", "DetonatePhone", "Devin", "SubMarine", "Dom", "DomesticGirl", "Dreyfuss", "DrFriedlander", "Epsilon", "EstateAgent", "Facebook", "FilmNoire", "Floyd", "Franklin", "FranklinTrevor", "GayMilitary", "Hao", "HitcherGirl", "Hunter", "Jimmy", "JimmyBoston", "Joe", "Josef", "Josh", "LamarDog", "Lester", "Skull", "LesterFranklin", "LesterMichael", "LifeInvader", "LsCustoms", "LSTI", "Manuel", "Marnie", "Martin", "MaryAnn", "Maude", "Mechanic", "Michael", "MichaelFranklin", "MichaelTrevor", "WarStock", "Minotaur", "Molly", "MorsMutual", "ArmyContact", "Brucie", "FibContact", "RockStarLogo", "Gerald", "Julio", "MechanicChinese", "MerryWeather", "Unicorn", "Mom", "MrsThornhill", "PatriciaTrevor", "PegasusDelivery", "ElitasTravel", "Sasquatch", "Simeon", "SocialClub", "Solomon", "Taxi", "Trevor", "YouTube", "Wade" };
@@ -348,19 +315,15 @@ public class MenuExample : BaseScript
         UIMenuItem noti6 = new UIMenuItem("VS Notification", "This is the notification you see in GTA:O when you kill someone or get revenge.");
         UIMenuItem noti7 = new UIMenuItem("3D Text", "This is known a lot.. let's you draw a 3D text in a precise world coordinates.");
         UIMenuItem noti8 = new UIMenuItem("Simple Text", "This will let you draw a 2D text on screen, you'll have to input the 2D  (X, Y) coordinates.");
-        notificationsMenu.AddItem(noti1);
-        notificationsMenu.AddItem(noti2);
-        notificationsMenu.AddItem(noti3);
-        notificationsMenu.AddItem(noti4);
-        notificationsMenu.AddItem(noti5);
-        notificationsMenu.AddItem(noti6);
-        notificationsMenu.AddItem(noti7);
-        notificationsMenu.AddItem(noti8);
+        notifications.AddItem(noti1);
+        notifications.AddItem(noti2);
+        notifications.AddItem(noti3);
+        notifications.AddItem(noti4);
+        notifications.AddItem(noti5);
+        notifications.AddItem(noti6);
+        notifications.AddItem(noti7);
+        notifications.AddItem(noti8);
 
-        notificationsItem.Activated += (sender, args) =>
-        {
-            sender.SwitchTo(notificationsMenu, inheritOldMenuParams: true);
-        };
         #endregion
 
         #region PauseMenu Enabler
@@ -465,14 +428,14 @@ public class MenuExample : BaseScript
         {
             if (item == showSimplePopup)
             {
-                ScaleformUI.Main.Warning.ShowWarning("This is the title", "This is the subtitle", "This is the prompt.. you have 6 seconds left", "This is the error message, ScaleformUI Ver. 3.0");
+                ScaleformUI.ScaleformUI.Warning.ShowWarning("This is the title", "This is the subtitle", "This is the prompt.. you have 6 seconds left", "This is the error message, ScaleformUI Ver. 3.0");
                 await Delay(1000);
                 for (int i = 5; i > -1; i--)
                 {
-                    ScaleformUI.Main.Warning.UpdateWarning("This is the title", "This is the subtitle", $"This is the prompt.. you have {i} seconds left", "This is the error message, ScaleformUI Ver. 3.0");
+                    ScaleformUI.ScaleformUI.Warning.UpdateWarning("This is the title", "This is the subtitle", $"This is the prompt.. you have {i} seconds left", "This is the error message, ScaleformUI Ver. 3.0");
                     await Delay(1000);
                 }
-                ScaleformUI.Main.Warning.Dispose();
+                ScaleformUI.ScaleformUI.Warning.Dispose();
             }
             else if (item == showPopupButtons)
             {
@@ -481,42 +444,41 @@ public class MenuExample : BaseScript
                     new InstructionalButton(Control.FrontendDown, "Accept only with Keyboard", PadCheck.Keyboard),
                     new InstructionalButton(Control.FrontendY, "Cancel only with GamePad", PadCheck.Controller),
                     new InstructionalButton(Control.FrontendX, Control.Detonate, "This will change button if you're using gamepad or keyboard"),
-                    new InstructionalButton(new List<Control> { Control.MoveUpOnly, Control.MoveLeftOnly , Control.MoveDownOnly , Control.MoveRightOnly }, "Woow multiple buttons at once??"),
-                    new InstructionalButton(InputGroup.INPUTGROUP_LOOK, "InputGroup example")
+                    new InstructionalButton(new List<Control> { Control.MoveUpOnly, Control.MoveLeftOnly , Control.MoveDownOnly , Control.MoveRightOnly }, "Woow multiple buttons at once??")
                 };
-                ScaleformUI.Main.Warning.ShowWarningWithButtons("This is the title", "This is the subtitle", "This is the prompt, press any button", buttons, "This is the error message, ScaleformUI Ver. 3.0");
-                ScaleformUI.Main.Warning.OnButtonPressed += (button) =>
+                ScaleformUI.ScaleformUI.Warning.ShowWarningWithButtons("This is the title", "This is the subtitle", "This is the prompt, press any button", buttons, "This is the error message, ScaleformUI Ver. 3.0");
+                ScaleformUI.ScaleformUI.Warning.OnButtonPressed += (button) =>
                 {
                     Debug.WriteLine($"You pressed a Button => {button.Text}");
                 };
             }
             else if (item == customInstr2)
             {
-                if (ScaleformUI.Main.InstructionalButtons.ControlButtons.Count >= 6) return;
-                ScaleformUI.Main.InstructionalButtons.AddInstructionalButton(new InstructionalButton((Control)new Random().Next(0, 250), "I'm a new button look at me!"));
+                if (ScaleformUI.ScaleformUI.InstructionalButtons.ControlButtons.Count >= 6) return;
+                ScaleformUI.ScaleformUI.InstructionalButtons.AddInstructionalButton(new InstructionalButton((Control)new Random().Next(0, 250), "I'm a new button look at me!"));
             }
             else if (item == bigMessage)
             {
-                ScaleformUI.Main.BigMessageInstance.ShowSimpleShard("TITLE", "SUBTITLE");
+                ScaleformUI.ScaleformUI.BigMessageInstance.ShowSimpleShard("TITLE", "SUBTITLE");
             }
             else if (item == midMessage)
             {
-                ScaleformUI.Main.MedMessageInstance.ShowColoredShard("TITLE", "SUBTITLE", HudColor.HUD_COLOUR_FREEMODE);
+                ScaleformUI.ScaleformUI.MedMessageInstance.ShowColoredShard("TITLE", "SUBTITLE", HudColor.HUD_COLOUR_FREEMODE);
             }
         };
 
         customInstr.OnListSelected += (item, index) =>
-            {
-                if (ScaleformUI.Main.InstructionalButtons.IsSaving) return;
-                ScaleformUI.Main.InstructionalButtons.AddSavingText((LoadingSpinnerType)(index + 1), "I'm a saving text", 3000);
-            };
+        {
+            if (ScaleformUI.ScaleformUI.InstructionalButtons.IsSaving) return;
+            ScaleformUI.ScaleformUI.InstructionalButtons.AddSavingText((LoadingSpinnerType)(index + 1), "I'm a saving text", 3000);
+        };
 
         // ====================================================================
         // =------------------- [Notifications SubMenu] ----------------------=
         // ====================================================================
 
         ScaleformUI.ScaleformUINotification notification = null;
-        notificationsMenu.OnListChange += (_menu, _item, _index) =>
+        notifications.OnListChange += (_menu, _item, _index) =>
         {
             if (_item == noti1)
             {
@@ -865,27 +827,28 @@ public class MenuExample : BaseScript
             }
         };
 
-        notificationsMenu.OnItemSelect += async (_menu, _item, _index) =>
+        notifications.OnItemSelect += async (_menu, _item, _index) =>
         {
-            API.AddTextEntry("FMMC_KEY_TIP8", "Insert text (Max 10 chars):");
-            string text = await Game.GetUserInput("", 10); // i set max 50 chars here as example but it can be way more!
+            API.AddTextEntry("FMMC_KEY_TIP8", "Insert text (Max 50 chars):");
+            string text = await Game.GetUserInput("", 50); // i set max 50 chars here as example but it can be way more!
             if (_item == noti3)
             {
                 Notifications.ShowHelpNotification(text, 5000);
             }
             else if (_item == noti4)
             {
+
                 _text = text;
                 _timer = Game.GameTime + 1;
                 Tick += FloatingHelpTimer;
             }
             else if (_item == noti5)
             {
-                await Notifications.ShowStatNotification(75, 50, text, true, true);
+                Notifications.ShowStatNotification(75, 50, text, true, true);
             }
             else if (_item == noti6)
             {
-                await Notifications.ShowVSNotification(12, HudColor.HUD_COLOUR_BLUE, Game.PlayerPed, 3, HudColor.HUD_COLOUR_RED);
+                Notifications.ShowVSNotification(Game.PlayerPed, HudColor.HUD_COLOUR_BLUE, HudColor.HUD_COLOUR_RED);
                 // you must specify 1 or 2 peds for this.. in this case i use the player ped twice for the sake of the example.
             }
             else if (_item == noti7)
@@ -937,17 +900,28 @@ public class MenuExample : BaseScript
             if (item == colorListItem)
                 sender.AnimationType = (MenuAnimationType)index;
         };
-
-        exampleMenu.OnMenuOpen += (menu, data) =>
+        exampleMenu.OnMenuStateChanged += (oldMenu, newMenu, state) =>
         {
-            Screen.ShowSubtitle($"{menu.Title} just opened!", 3000);
-            Debug.WriteLine($"{menu.Title} just opened!");
-        };
-
-        exampleMenu.OnMenuClose += (menu) =>
-        {
-            Screen.ShowSubtitle($"{menu.Title} just closed!", 3000);
-            Debug.WriteLine($"{menu.Title} just closed!");
+            if (state == MenuState.Opened)
+            {
+                Screen.ShowSubtitle($"{newMenu.Title} just opened!", 3000);
+                Debug.WriteLine($"{newMenu.Title} just opened!");
+            }
+            else if (state == MenuState.ChangeForward)
+            {
+                Screen.ShowSubtitle($"{oldMenu.Title} => {newMenu.Title}", 3000);
+                Debug.WriteLine($"{oldMenu.Title} => {newMenu.Title}");
+            }
+            else if (state == MenuState.ChangeBackward)
+            {
+                Screen.ShowSubtitle($"{newMenu.Title} <= {oldMenu.Title}", 3000);
+                Debug.WriteLine($"{newMenu.Title} <= {oldMenu.Title}");
+            }
+            else if (state == MenuState.Closed)
+            {
+                Screen.ShowSubtitle($"{oldMenu.Title} just closed!", 3000);
+                Debug.WriteLine($"{oldMenu.Title} just closed!");
+            }
         };
 
         #endregion
@@ -978,83 +952,21 @@ public class MenuExample : BaseScript
             Tick -= FloatingHelpTimer;
         await Task.FromResult(0);
     }
-    #endregion
-
-    public void CreateRadialMenu()
-    {
-        RadialMenu menu = new RadialMenu();
-
-        long imgdui = API.CreateDui("https://giphy.com/embed/ckT59CvStmUsU", 64, 64);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "item1", API.GetDuiHandle(imgdui));
-
-        long imgdui1 = API.CreateDui("https://giphy.com/embed/10bTCLE8GtHHS8", 96, 64);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "item2", API.GetDuiHandle(imgdui1));
-
-        long imgdui2 = API.CreateDui("https://giphy.com/embed/nHyZigjdO4hEodq9fv", 64, 64);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "item3", API.GetDuiHandle(imgdui2));
-
-        SegmentItem item = new SegmentItem("This is the label!", "~BLIP_INFO_ICON~ This is the description.. it's multiline so it can be very long!", "scaleformui", "item1", 64, 64, HudColor.HUD_COLOUR_FREEMODE);
-        SegmentItem item1 = new SegmentItem("It's so long it scrolls automatically! Isn't this amazing?", "~BLIP_INFO_ICON~ This is the description.. it's multiline so it can be very long!", "scaleformui", "item2", 96, 64, HudColor.HUD_COLOUR_GREEN);
-        SegmentItem item2 = new SegmentItem("Label 3", "~BLIP_INFO_ICON~ This is the description.. it's multiline so it can be very long!", "scaleformui", "item3", 64, 64, HudColor.HUD_COLOUR_RED);
-        item.SetQuantity(8000, 9999);
-        item1.SetQuantity(50, 100);
-        item2.SetQuantity(5000, 0);
-
-        for (int i = 0; i < 8; i++)
-        {
-            menu.Segments[i].AddItem(item);
-            menu.Segments[i].AddItem(item1);
-            menu.Segments[i].AddItem(item2);
-        }
-
-        menu.OnMenuOpen += (menu, _) =>
-        {
-            Screen.ShowSubtitle("Radial Menu opened!");
-        };
-
-        menu.OnMenuClose += (menu) =>
-        {
-            Screen.ShowSubtitle("Radial Menu closed!");
-        };
-
-        menu.OnSegmentHighlight += (segment) =>
-        {
-            Screen.ShowSubtitle($"Segment {segment.Index} highlighted!");
-        };
-
-        menu.OnSegmentIndexChange += (segment, index) =>
-        {
-            Screen.ShowSubtitle($"Segment {segment.Index}, index changed to {index}!");
-        };
-
-        menu.OnSegmentSelect += (segment) =>
-        {
-            Screen.ShowSubtitle($"Segment {segment.Index} selected!");
-        };
-
-        menu.CurrentSegment = 1;
-        menu.Visible = true;
-    }
 
     public async void PauseMenuShowcase(UIMenu _menu)
     {
         UIMenu mainMenu = _menu;
         // tabview is the main menu.. the container of all the tabs.
         TabView pauseMenu = new TabView("PauseMenu example", "Look there's a subtitle too!", "Detail 1", "Detail 2", "Detail 3");
-
-        int mugshot = API.RegisterPedheadshot(Game.PlayerPed.Handle);
+        /*
+        var mugshot = API.RegisterPedheadshot(Game.PlayerPed.Handle);
         while (!API.IsPedheadshotReady(mugshot)) await BaseScript.Delay(1);
-        string mugtxd = API.GetPedheadshotTxdString(mugshot);
-        pauseMenu.HeaderPicture = new(mugtxd, mugtxd);
-
+        var txd = API.GetPedheadshotTxdString(mugshot);
+        pauseMenu.HeaderPicture = new(txd, txd);
+        */
+        _menuPool.Add(pauseMenu);
         TextTab basicTab = new TextTab("TabTextItem", "This is the title!");
-
-        long bg_dui = API.CreateDui("https://giphy.com/embed/sxwk9hGlsULcYm6hDX", 1280, 720);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "pausebigbg", API.GetDuiHandle(bg_dui));
-
-        basicTab.UpdateBackground("scaleformui", "pausebigbg");
-        basicTab.AddItem(new BasicTabItem("~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
-        basicTab.LabelsList[0].LabelFont = ScaleformFonts.HANDSTYLE_HEIST;
+        basicTab.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
         basicTab.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~r~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
         basicTab.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~b~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
         basicTab.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~g~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
@@ -1075,27 +987,13 @@ public class MenuExample : BaseScript
         TabLeftItem third = new TabLeftItem("3 - Statistics", LeftItemType.Statistics);
         TabLeftItem fourth = new TabLeftItem("4 - Settings", LeftItemType.Settings);
         TabLeftItem fifth = new TabLeftItem("5 - Keymaps", LeftItemType.Keymap);
-
-        long _bginfo = API.CreateDui("https://giphy.com/embed/bG1oRM2Qp2kN3MTZCO", 480, 480);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "pauseinfobg", API.GetDuiHandle(_bginfo));
-
-        long _bgstats = API.CreateDui("https://giphy.com/embed/xT9IgsHTiYHILDGDM4", 480, 480);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "pausestatsbg", API.GetDuiHandle(_bgstats));
-
-        long _bgsets = API.CreateDui("https://giphy.com/embed/xT9IgsHTiYHILDGDM4", 480, 480);
-        API.CreateRuntimeTextureFromDuiHandle(txd, "pausesetsbg", API.GetDuiHandle(_bgsets));
-
-        second.UpdateBackground("scaleformui", "pauseinfobg", LeftItemBGType.Full);
-        third.UpdateBackground("scaleformui", "pausestatsbg", LeftItemBGType.Masked);
-        fourth.UpdateBackground("scaleformui", "pausesetsbg", LeftItemBGType.Resized);
-
         multiItemTab.AddLeftItem(first);
         multiItemTab.AddLeftItem(second);
         multiItemTab.AddLeftItem(third);
         multiItemTab.AddLeftItem(fourth);
         multiItemTab.AddLeftItem(fifth);
 
-        second.RightTitle = "Info Title!!";
+        second.TextTitle = "Info Title!!";
         second.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
         second.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~r~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
         second.AddItem(new BasicTabItem("~BLIP_INFO_ICON~ ~b~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"));
@@ -1137,7 +1035,7 @@ public class MenuExample : BaseScript
         fourth.AddItem(_settings5);
         fourth.AddItem(_settings6);
 
-        fifth.RightTitle = "ACTION";
+        fifth.TextTitle = "ACTION";
         fifth.KeymapRightLabel_1 = "PRIMARY";
         fifth.KeymapRightLabel_2 = "SECONDARY";
         KeymapItem key1 = new KeymapItem("Simple Keymap", "~INPUT_FRONTEND_ACCEPT~", "~INPUT_VEH_EXIT~");
@@ -1290,11 +1188,11 @@ public class MenuExample : BaseScript
             // to prevent the pause menu to close the menu too!
 
             // clear the player list
-            foreach (BaseTab tab in menu.Tabs)
+            foreach (var tab in menu.Tabs)
             {
                 if (tab is PlayerListTab)
                 {
-                    PlayerListTab t = tab as PlayerListTab;
+                    var t = tab as PlayerListTab;
                     t.PlayersColumn.Items.ForEach(item => item.Dispose());
                 }
             }
@@ -1327,11 +1225,11 @@ public class MenuExample : BaseScript
 
                     };
 
-                    ScaleformUI.Main.InstructionalButtons.SetInstructionalButtons(buttons);
+                    ScaleformUI.ScaleformUI.InstructionalButtons.SetInstructionalButtons(buttons);
                 }
             }
             else if (focusLevel == 0)
-                ScaleformUI.Main.InstructionalButtons.SetInstructionalButtons(menu.InstructionalButtons);
+                ScaleformUI.ScaleformUI.InstructionalButtons.SetInstructionalButtons(menu.InstructionalButtons);
 
         };
 
@@ -1380,13 +1278,13 @@ public class MenuExample : BaseScript
         while (!API.IsPedheadshotReady(mugshot)) await BaseScript.Delay(1);
         string ped_txd = API.GetPedheadshotTxdString(mugshot);
         pauseMenu.HeaderPicture = new(ped_txd, ped_txd);
+        _menuPool.Add(pauseMenu);
 
         UIMenuItem item = new UIMenuItem("UIMenuItem", "UIMenuItem description");
-        UIMenuListItem item1 = new UIMenuListItem("~g~UIMenuListItem", new List<dynamic>() { "This", "is", "a", "Test" }, 0, "UIMenuListItem description");
-        UIMenuCheckboxItem item2 = new UIMenuCheckboxItem("~b~UIMenuCheckboxItem", true, "UIMenuCheckboxItem description");
-        UIMenuSliderItem item3 = new UIMenuSliderItem("~p~UIMenuSliderItem", "UIMenuSliderItem description", 100, 5, 50, false);
-        UIMenuProgressItem item4 = new UIMenuProgressItem("~o~UIMenuProgressItem", 10, 5, "UIMenuProgressItem description");
-        item.LabelFont = ScaleformFonts.ENGRAVERS_OLD_ENGLISH_MT_STD;
+        UIMenuListItem item1 = new UIMenuListItem("UIMenuListItem", new List<dynamic>() { "This", "is", "a", "Test" }, 0, "UIMenuListItem description");
+        UIMenuCheckboxItem item2 = new UIMenuCheckboxItem("UIMenuCheckboxItem", true, "UIMenuCheckboxItem description");
+        UIMenuSliderItem item3 = new UIMenuSliderItem("UIMenuSliderItem", "UIMenuSliderItem description", 100, 5, 50, false);
+        UIMenuProgressItem item4 = new UIMenuProgressItem("UIMenuProgressItem", 10, 5, "UIMenuProgressItem description");
         item.BlinkDescription = true;
         pauseMenu.SettingsColumn.AddSettings(item);
         pauseMenu.SettingsColumn.AddSettings(item1);
@@ -1537,9 +1435,9 @@ public class MenuExample : BaseScript
 
         pauseMenu.MissionPanel.UpdatePanelPicture("scaleformui", "lobby_panelbackground");
         pauseMenu.MissionPanel.Title = "ScaleformUI - Title";
-        UIFreemodeDetailsItem missionItem1 = new("Hellooooo", "I'm here too!", false, ScaleformFonts.GTAV_COURIER, ScaleformFonts.HANDSTYLE_HEIST);
-        UIFreemodeDetailsItem missionItem2 = new("Hellooooo", "I'm here too!", ScaleformFonts.GTAV_COURIER, ScaleformFonts.HANDSTYLE_HEIST, BadgeIcon.COUNTRY_ITALY, HudColor.HUD_COLOUR_PURE_WHITE, true);
-        UIFreemodeDetailsItem missionItem3 = new("Hellooooo", "I'm here too!", true, ScaleformFonts.GTAV_COURIER, ScaleformFonts.HANDSTYLE_HEIST);
+        UIFreemodeDetailsItem missionItem1 = new("Hellooooo", "I'm here too!", false);
+        UIFreemodeDetailsItem missionItem2 = new("Hellooooo", "I'm here too!", BadgeIcon.COUNTRY_ITALY, HudColor.HUD_COLOUR_PURE_WHITE, true);
+        UIFreemodeDetailsItem missionItem3 = new("Hellooooo", "I'm here too!", true);
         //UIFreemodeDetailsItem missionItem4 = new("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "", false);
         pauseMenu.MissionPanel.AddItem(missionItem1);
         pauseMenu.MissionPanel.AddItem(missionItem2);
@@ -1547,11 +1445,16 @@ public class MenuExample : BaseScript
 
         pauseMenu.Visible = true;
         //API.UnregisterPedheadshot(mugshot);
+
+
     }
 
     bool feedOpen = false;
     public MenuExample()
     {
+        _menuPool = new MenuPool();
+        _menuPool.RefreshIndex();
+
         _timerBarPool = new TimerBarPool();
         TextTimerBar textTimerBar = new TextTimerBar("Label", "Caption", CitizenFX.Core.UI.Font.Pricedown);
         _timerBarPool.Add(textTimerBar);
@@ -1570,41 +1473,23 @@ public class MenuExample : BaseScript
 
             //If the player is in drawing range for the marker, the marker will draw automatically and the DrawText will show itself (true if the ped enters the marker)
             if (playerMarker.IsInRange)
-                Notifications.DrawText(text: $"IsInMarker => {playerMarker.IsInMarker}");
+                Notifications.DrawText($"IsInMarker => {playerMarker.IsInMarker}");
 
-            if (Game.IsControlJustPressed(0, Control.SelectCharacterMichael) && !MenuHandler.IsAnyMenuOpen) // Our menu enabler (to exit menu simply press Back on the main menu)
+            if (Game.IsControlJustPressed(0, Control.SelectCharacterMichael) && !_menuPool.IsAnyMenuOpen) // Our menu enabler (to exit menu simply press Back on the main menu)
                 ExampleMenu();
 
-            if (Game.IsControlJustPressed(0, Control.DropAmmo) && !MenuHandler.IsAnyMenuOpen)
-            {
-                CreateRadialMenu();
-            }
-
             // to open the pause menu without opening the normal menu.
-            if (Game.IsControlJustPressed(0, Control.SelectCharacterFranklin) && !MenuHandler.IsAnyMenuOpen && !MenuHandler.IsAnyPauseMenuOpen)
+            if (Game.IsControlJustPressed(0, Control.SelectCharacterFranklin) && !_menuPool.IsAnyMenuOpen && !_menuPool.IsAnyPauseMenuOpen)
                 PauseMenuShowcase(null);
-            if (Game.IsControlJustPressed(0, Control.SelectCharacterTrevor) && !MenuHandler.IsAnyMenuOpen && !MenuHandler.IsAnyPauseMenuOpen)
+            if (Game.IsControlJustPressed(0, Control.SelectCharacterTrevor) && !_menuPool.IsAnyMenuOpen && !_menuPool.IsAnyPauseMenuOpen)
                 LobbyPauseMenuShowcase(null);
-
-            /*
-            if (Game.IsControlJustPressed(0, Control.Detonate) || Game.IsDisabledControlJustPressed(0, Control.Detonate))
-            {
-
-                long _wallp = API.CreateDui("https://images8.alphacoders.com/132/1322626.png", 2560, 1440);
-                API.CreateRuntimeTextureFromDuiHandle(txd, "wallp", API.GetDuiHandle(_wallp));
-
-                int overlay1 = await MinimapOverlays.AddSizedOverlayToMap("scaleformui", "bannerbackground", 365, -422, centered: true);
-                World.CreateBlip(new Vector3(365, -422, 45));
-
-                int overlay2 = await MinimapOverlays.AddSizedOverlayToMap("scaleformui", "wallp", 2000, 1000, centered: true);
-            }
-            */
+            await Task.FromResult(0);
 
             if (Game.IsControlJustPressed(0, (Control)170)) // F3
             {
-                if (ScaleformUI.Main.JobMissionSelection.Enabled)
+                if (ScaleformUI.ScaleformUI.JobMissionSelection.Enabled)
                 {
-                    ScaleformUI.Main.JobMissionSelection.Enabled = false;
+                    ScaleformUI.ScaleformUI.JobMissionSelection.Enabled = false;
                     return;
                 }
 
@@ -1612,10 +1497,10 @@ public class MenuExample : BaseScript
                 long _paneldui = API.CreateDui("https://i.imgur.com/mH0Y65C.gif", 288, 160);
                 API.CreateRuntimeTextureFromDuiHandle(txd, "panelbackground", API.GetDuiHandle(_paneldui));
 
-                ScaleformUI.Main.JobMissionSelection.SetTitle("MISSION SELECTOR");
-                ScaleformUI.Main.JobMissionSelection.MaxVotes = 3;
-                ScaleformUI.Main.JobMissionSelection.SetVotes(0, "VOTES");
-                ScaleformUI.Main.JobMissionSelection.Cards = new List<JobSelectionCard>();
+                ScaleformUI.ScaleformUI.JobMissionSelection.SetTitle("MISSION SELECTOR");
+                ScaleformUI.ScaleformUI.JobMissionSelection.MaxVotes = 3;
+                ScaleformUI.ScaleformUI.JobMissionSelection.SetVotes(0, "VOTES");
+                ScaleformUI.ScaleformUI.JobMissionSelection.Cards = new List<JobSelectionCard>();
 
                 JobSelectionCard card = new JobSelectionCard("Test 1", "~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "test", "panelbackground", 12, 15, JobSelectionCardIcon.BASE_JUMPING, HudColor.HUD_COLOUR_FREEMODE, 2, new List<MissionDetailsItem>()
                 {
@@ -1625,7 +1510,7 @@ public class MenuExample : BaseScript
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)3, HudColor.HUD_COLOUR_GREEN),
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)4, HudColor.HUD_COLOUR_WHITE, true),
                 });
-                ScaleformUI.Main.JobMissionSelection.AddCard(card);
+                ScaleformUI.ScaleformUI.JobMissionSelection.AddCard(card);
 
                 JobSelectionCard card1 = new JobSelectionCard("Test 2", "~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "test", "panelbackground", 12, 15, JobSelectionCardIcon.BASE_JUMPING, HudColor.HUD_COLOUR_FREEMODE, 2, new List<MissionDetailsItem>()
                 {
@@ -1635,7 +1520,7 @@ public class MenuExample : BaseScript
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)8, HudColor.HUD_COLOUR_GREEN),
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)9, HudColor.HUD_COLOUR_WHITE, true),
                 });
-                ScaleformUI.Main.JobMissionSelection.AddCard(card1);
+                ScaleformUI.ScaleformUI.JobMissionSelection.AddCard(card1);
 
                 JobSelectionCard card2 = new JobSelectionCard("Test 3", "~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "test", "panelbackground", 12, 15, JobSelectionCardIcon.BASE_JUMPING, HudColor.HUD_COLOUR_FREEMODE, 2, new List<MissionDetailsItem>()
                 {
@@ -1645,7 +1530,7 @@ public class MenuExample : BaseScript
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)13, HudColor.HUD_COLOUR_GREEN),
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)14, HudColor.HUD_COLOUR_WHITE, true),
                 });
-                ScaleformUI.Main.JobMissionSelection.AddCard(card2);
+                ScaleformUI.ScaleformUI.JobMissionSelection.AddCard(card2);
 
                 JobSelectionCard card3 = new JobSelectionCard("Test 4", "~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "test", "panelbackground", 12, 15, JobSelectionCardIcon.BASE_JUMPING, HudColor.HUD_COLOUR_FREEMODE, 2, new List<MissionDetailsItem>()
                 {
@@ -1655,7 +1540,7 @@ public class MenuExample : BaseScript
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)18, HudColor.HUD_COLOUR_GREEN),
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)19, HudColor.HUD_COLOUR_WHITE, true),
                 });
-                ScaleformUI.Main.JobMissionSelection.AddCard(card3);
+                ScaleformUI.ScaleformUI.JobMissionSelection.AddCard(card3);
 
                 JobSelectionCard card4 = new JobSelectionCard("Test 5", "~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "test", "panelbackground", 12, 15, JobSelectionCardIcon.BASE_JUMPING, HudColor.HUD_COLOUR_FREEMODE, 2, new List<MissionDetailsItem>()
                 {
@@ -1665,7 +1550,7 @@ public class MenuExample : BaseScript
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)23, HudColor.HUD_COLOUR_GREEN),
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)24, HudColor.HUD_COLOUR_WHITE, true),
                 });
-                ScaleformUI.Main.JobMissionSelection.AddCard(card4);
+                ScaleformUI.ScaleformUI.JobMissionSelection.AddCard(card4);
 
                 JobSelectionCard card5 = new JobSelectionCard("Test 6", "~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "test", "panelbackground", 12, 15, JobSelectionCardIcon.BASE_JUMPING, HudColor.HUD_COLOUR_FREEMODE, 2, new List<MissionDetailsItem>()
                 {
@@ -1675,9 +1560,9 @@ public class MenuExample : BaseScript
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)3, HudColor.HUD_COLOUR_GREEN),
                     new MissionDetailsItem("Left Label", "Right Label", (JobIcon)4, HudColor.HUD_COLOUR_WHITE, true),
                 });
-                ScaleformUI.Main.JobMissionSelection.AddCard(card5);
+                ScaleformUI.ScaleformUI.JobMissionSelection.AddCard(card5);
 
-                ScaleformUI.Main.JobMissionSelection.Buttons = new List<JobSelectionButton>()
+                ScaleformUI.ScaleformUI.JobMissionSelection.Buttons = new List<JobSelectionButton>()
                 {
                     new JobSelectionButton("Test1", "description test", new List<MissionDetailsItem>()) {Selectable = false },
 
@@ -1685,25 +1570,26 @@ public class MenuExample : BaseScript
 
                     new JobSelectionButton("Test3", "description test", new List<MissionDetailsItem>()) {Selectable = true },
                 };
-                ScaleformUI.Main.JobMissionSelection.Buttons[0].OnButtonPressed += () =>
+                ScaleformUI.ScaleformUI.JobMissionSelection.Buttons[0].OnButtonPressed += () =>
                 {
-                    Screen.ShowSubtitle($"Button Pressed => {ScaleformUI.Main.JobMissionSelection.Buttons[0].Text}");
+                    Screen.ShowSubtitle($"Button Pressed => {ScaleformUI.ScaleformUI.JobMissionSelection.Buttons[0].Text}");
                 };
 
-                ScaleformUI.Main.JobMissionSelection.Enabled = true;
+                ScaleformUI.ScaleformUI.JobMissionSelection.Enabled = true;
 
                 await Delay(1000);
-                ScaleformUI.Main.JobMissionSelection.ShowPlayerVote(2, "PlayerName", HudColor.HUD_COLOUR_GREEN, true, true);
+                ScaleformUI.ScaleformUI.JobMissionSelection.ShowPlayerVote(2, "PlayerName", HudColor.HUD_COLOUR_GREEN, true, true);
             }
+
             if (Game.IsControlJustPressed(0, Control.DropWeapon)) // F9
             {
                 feedOpen = !feedOpen;
-                ScaleformUI.Main.BigFeed.Title = "Super Title!";
-                ScaleformUI.Main.BigFeed.Subtitle = "Super Subtitle";
-                ScaleformUI.Main.BigFeed.BodyText = "~input_context~ 🥳 ~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat";
-                ScaleformUI.Main.BigFeed.UpdatePicture("", ""); // it doesn't support DUI runtime textures!
-                ScaleformUI.Main.BigFeed.RightAligned = true; // false to center align it
-                ScaleformUI.Main.BigFeed.Enabled = feedOpen;
+                ScaleformUI.ScaleformUI.BigFeed.Title = "Super Title!";
+                ScaleformUI.ScaleformUI.BigFeed.Subtitle = "Super Subtitle";
+                ScaleformUI.ScaleformUI.BigFeed.BodyText = "~input_context~ 🥳 ~y~Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat";
+                ScaleformUI.ScaleformUI.BigFeed.UpdatePicture("", ""); // it doesn't support DUI runtime textures!
+                ScaleformUI.ScaleformUI.BigFeed.RightAligned = true; // false to center align it
+                ScaleformUI.ScaleformUI.BigFeed.Enabled = feedOpen;
             }
         };
     }

@@ -1,7 +1,8 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using ScaleformUI.Scaleforms;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI
 {
     public enum JobSelectionCardIcon
     {
@@ -87,18 +88,18 @@ namespace ScaleformUI.Scaleforms
 
         public bool AlreadyVoted => alreadyVoted;
 
-        internal void Dispose()
+        public void Dispose()
         {
             Votes = new int[9];
             _sc.Dispose();
             _sc = null;
         }
 
-        internal async void BuildMenu()
+        public async void BuildMenu()
         {
             await Load();
             SetTitle(JobTitle.Title, JobTitle.Votes);
-            foreach (JobSelectionCard card in Cards)
+            foreach (var card in Cards)
             {
                 if (!string.IsNullOrWhiteSpace(card.Txd))
                 {
@@ -112,15 +113,15 @@ namespace ScaleformUI.Scaleforms
                 API.SetStreamedTextureDictAsNoLongerNeeded(card.Txd);
             }
 
-            foreach (JobSelectionButton button in Buttons)
+            foreach (var button in Buttons)
             {
                 SetButtonItem(Buttons.IndexOf(button) + 6, button.Text);
             }
             SetSelection(0, Cards[0].Title, Cards[0].Description);
 
-            foreach (MissionDetailsItem detail in Cards[0].Details)
+            foreach (var detail in Cards[0].Details)
             {
-                SetDetailsItem(Cards[0].Details.IndexOf(detail), 0, Cards[0].Details.IndexOf(detail), detail.Type, 0, 0, detail.TextLeft, detail.TextRight, detail.Icon, detail.IconColor, detail.Tick);
+                SetDetailsItem(Cards[0].Details.IndexOf(detail), 0, Cards[0].Details.IndexOf(detail), (int)detail.Type, 0, 0, detail.TextLeft, detail.TextRight, detail.Icon, detail.IconColor, detail.Tick);
             }
         }
 
@@ -129,22 +130,22 @@ namespace ScaleformUI.Scaleforms
             if (idx < 6)
             {
                 SetSelection(idx, Cards[idx].Title, Cards[idx].Description);
-                foreach (MissionDetailsItem detail in Cards[idx].Details)
+                foreach (var detail in Cards[idx].Details)
                 {
-                    SetDetailsItem(Cards[idx].Details.IndexOf(detail), idx, Cards[idx].Details.IndexOf(detail), detail.Type, 0, 0, detail.TextLeft, detail.TextRight, detail.Icon, detail.IconColor, detail.Tick);
+                    SetDetailsItem(Cards[idx].Details.IndexOf(detail), idx, Cards[idx].Details.IndexOf(detail), (int)detail.Type, 0, 0, detail.TextLeft, detail.TextRight, detail.Icon, detail.IconColor, detail.Tick);
                 }
             }
             else
             {
                 SetSelection(idx, Buttons[idx - 6].Text, Buttons[idx - 6].Description);
-                foreach (MissionDetailsItem detail in Buttons[idx - 6].Details)
+                foreach (var detail in Buttons[idx - 6].Details)
                 {
-                    SetDetailsItem(Buttons[idx - 6].Details.IndexOf(detail), idx, Buttons[idx - 6].Details.IndexOf(detail), detail.Type, 0, 0, detail.TextLeft, detail.TextRight, detail.Icon, detail.IconColor, detail.Tick);
+                    SetDetailsItem(Buttons[idx - 6].Details.IndexOf(detail), idx, Buttons[idx - 6].Details.IndexOf(detail), (int)detail.Type, 0, 0, detail.TextLeft, detail.TextRight, detail.Icon, detail.IconColor, detail.Tick);
                 }
             }
         }
 
-        internal void UpdateOwnVote(int idx, int oldidx, bool showCheckMark = false, bool flashBG = false)
+        public void UpdateOwnVote(int idx, int oldidx, bool showCheckMark = false, bool flashBG = false)
         {
             if (idx == oldidx) return;
 
@@ -171,20 +172,20 @@ namespace ScaleformUI.Scaleforms
         }
 
 
-        internal async Task Load()
+        public async Task Load()
         {
             if (_sc != null) return;
             _sc = new("MP_NEXT_JOB_SELECTION");
-            int timeout = 1000;
-            int start = Main.GameTime;
-            while (!_sc.IsLoaded && Main.GameTime - start < timeout) await BaseScript.Delay(0);
+            var timeout = 1000;
+            int start = ScaleformUI.GameTime;
+            while (!_sc.IsLoaded && ScaleformUI.GameTime - start < timeout) await BaseScript.Delay(0);
         }
 
         int eventType = 0;
         int itemId = 0;
         int context = 0;
         int unused = 0;
-        internal void Update()
+        public void Update()
         {
             _sc.Render2D();
             Game.DisableAllControlsThisFrame(0);
@@ -198,7 +199,7 @@ namespace ScaleformUI.Scaleforms
                 API.SetInputExclusive(2, 237);
                 API.SetInputExclusive(2, 238);
 
-                bool success = API.GetScaleformMovieCursorSelection(_sc.Handle, ref eventType, ref context, ref itemId, ref unused);
+                var success = API.GetScaleformMovieCursorSelection(_sc.Handle, ref eventType, ref context, ref itemId, ref unused);
                 if (success)
                 {
                     switch (eventType)
@@ -215,7 +216,7 @@ namespace ScaleformUI.Scaleforms
                                 {
                                     if (alreadyVoted)
                                     {
-                                        int old = VotedFor;
+                                        var old = VotedFor;
                                         Votes[VotedFor] -= 1;
                                         if (old != SelectedCard)
                                         {
@@ -223,7 +224,6 @@ namespace ScaleformUI.Scaleforms
                                             Votes[VotedFor] += 1;
                                         }
                                         UpdateOwnVote(VotedFor, old);
-                                        Cards[SelectedCard].CardSelected();
                                     }
                                     else
                                     {
@@ -231,18 +231,17 @@ namespace ScaleformUI.Scaleforms
                                         VotedFor = SelectedCard;
                                         Votes[VotedFor] += 1;
                                         UpdateOwnVote(VotedFor, -1);
-                                        Cards[SelectedCard].CardSelected();
                                     }
                                 }
                                 else
                                 {
-                                    JobSelectionButton btn = Buttons[SelectedCard - 6];
+                                    var btn = Buttons[SelectedCard - 6];
 
                                     if (btn.Selectable)
                                     {
                                         if (alreadyVoted)
                                         {
-                                            int old = VotedFor;
+                                            var old = VotedFor;
                                             Votes[VotedFor] -= 1;
                                             if (old != SelectedCard)
                                             {
@@ -305,7 +304,7 @@ namespace ScaleformUI.Scaleforms
                 {
                     if (alreadyVoted)
                     {
-                        int old = VotedFor;
+                        var old = VotedFor;
                         Votes[VotedFor] -= 1;
                         if (old != SelectedCard)
                         {
@@ -313,7 +312,6 @@ namespace ScaleformUI.Scaleforms
                             Votes[VotedFor] += 1;
                         }
                         UpdateOwnVote(VotedFor, old);
-                        Cards[SelectedCard].CardSelected();
                     }
                     else
                     {
@@ -321,18 +319,17 @@ namespace ScaleformUI.Scaleforms
                         VotedFor = SelectedCard;
                         Votes[VotedFor] += 1;
                         UpdateOwnVote(VotedFor, -1);
-                        Cards[SelectedCard].CardSelected();
                     }
                 }
                 else
                 {
-                    JobSelectionButton btn = Buttons[SelectedCard - 6];
+                    var btn = Buttons[SelectedCard - 6];
 
                     if (btn.Selectable)
                     {
                         if (alreadyVoted)
                         {
-                            int old = VotedFor;
+                            var old = VotedFor;
                             Votes[VotedFor] -= 1;
                             if (old != SelectedCard)
                             {
@@ -405,7 +402,6 @@ namespace ScaleformUI.Scaleforms
         }
     }
 
-    public delegate void OnCardSelected(JobSelectionCard card);
     public class JobSelectionCard
     {
         public string Title { get; set; }
@@ -418,8 +414,6 @@ namespace ScaleformUI.Scaleforms
         public HudColor IconColor { get; set; }
         public int ApMultiplier { get; set; }
         public List<MissionDetailsItem> Details { get; set; } // NON PIU DI 4
-        public OnCardSelected OnCardSelected;
-
 
         public JobSelectionCard(string title, string description, string txd, string txn, int rpMult, int cashMult, JobSelectionCardIcon icon, HudColor iconColor, int apMultiplier, List<MissionDetailsItem> details)
         {
@@ -433,10 +427,6 @@ namespace ScaleformUI.Scaleforms
             IconColor = iconColor;
             ApMultiplier = apMultiplier;
             Details = details;
-        }
-        internal void CardSelected()
-        {
-            OnCardSelected?.Invoke(this);
         }
     }
 
@@ -482,7 +472,7 @@ namespace ScaleformUI.Scaleforms
 
     public class MissionDetailsItem
     {
-        public JobIcon Icon;
+        public new JobIcon Icon;
         public string TextLeft;
         public string TextRight;
         public HudColor IconColor;

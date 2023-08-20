@@ -1,7 +1,8 @@
 ﻿using CitizenFX.Core;
+using ScaleformUI.Scaleforms;
 using static CitizenFX.Core.Native.API;
 
-namespace ScaleformUI.Scaleforms
+namespace ScaleformUI
 {
     public class BigFeedHandler
     {
@@ -111,8 +112,8 @@ namespace ScaleformUI.Scaleforms
             if (_sc != null) return;
             _sc = new ScaleformWideScreen("GTAV_ONLINE");
             int timeout = 1000;
-            int start = Main.GameTime;
-            while (!_sc.IsLoaded && Main.GameTime - start < timeout) await BaseScript.Delay(0);
+            int start = ScaleformUI.GameTime;
+            while (!_sc.IsLoaded && ScaleformUI.GameTime - start < timeout) await BaseScript.Delay(0);
             _sc.CallFunction("HIDE_ONLINE_LOGO");
         }
         private void Dispose()

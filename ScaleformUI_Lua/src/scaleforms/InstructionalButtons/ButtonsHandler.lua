@@ -1,12 +1,4 @@
-ButtonsHandler = setmetatable({
-    _sc = nil --[[@type Scaleform]],
-    UseMouseButtons = false,
-    IsUsingKeyboard = false,
-    _changed = true,
-    savingTimer = 0,
-    IsSaving = false,
-    ControlButtons = {}
-}, ButtonsHandler)
+ButtonsHandler = setmetatable({}, ButtonsHandler)
 ButtonsHandler.__index = ButtonsHandler
 ButtonsHandler.__call = function()
     return "ButtonsHandler"
@@ -22,6 +14,37 @@ end
 ---@field public IsSaving boolean
 ---@field public ControlButtons table<string, InstructionalButton>
 ---@field public Enabled fun(self: table, bool: boolean?): boolean
+
+function ButtonsHandler.New()
+    local data = {
+        _sc = nil --[[@type Scaleform]],
+        UseMouseButtons = false,
+        _enabled = false,
+        IsUsingKeyboard = false,
+        _changed = true,
+        savingTimer = 0,
+        IsSaving = false,
+        ControlButtons = {}
+    }
+    return setmetatable(data, ButtonsHandler)
+end
+
+---Enables or disables the instructional buttons
+---@param bool boolean?
+---@return boolean
+function ButtonsHandler:Enabled(bool)
+    if bool ~= nil then
+        if not bool and self._sc ~= nil then
+            self._sc:CallFunction("CLEAR_ALL", false)
+            self._sc:CallFunction("CLEAR_RENDER", false)
+            self._sc:Dispose()
+            self._sc = nil
+        end
+        self._enabled = bool
+        self._changed = bool
+    end
+    return self._enabled
+end
 
 ---Loads the instructional buttons
 function ButtonsHandler:Load()
@@ -64,10 +87,6 @@ function ButtonsHandler:ClearButtonList()
     self._changed = true
 end
 
-function ButtonsHandler:Refresh()
-    self._changed = true
-end
-
 ---Shows a busy spinner
 ---@param spinnerType number
 ---@param text string
@@ -101,14 +120,14 @@ end
 ---Updates the instructional buttons
 function ButtonsHandler:UpdateButtons()
     if not self._changed then return end
-    if self._sc == nil or self.ControlButtons == nil or #self.ControlButtons == 0 then return end
+    if self._sc == nil then return end
 
     self._sc:CallFunction("SET_DATA_SLOT_EMPTY", false)
     self._sc:CallFunction("TOGGLE_MOUSE_BUTTONS", false, self.UseMouseButtons)
     local count = 0
 
     for k, button in pairs(self.ControlButtons) do
-        if not IsUsingKeyboard(2) then
+        if button:IsUsingController() then
             if button.PadCheck == 0 or button.PadCheck == -1 then
                 if ScaleformUI.Scaleforms.Warning:IsShowing() then
                     self._sc:CallFunction("SET_DATA_SLOT", false, count, button:GetButtonId(), button.Text, 0, -1)
@@ -139,29 +158,23 @@ end
 
 ---Draws the instructional buttons on the screen
 function ButtonsHandler:Draw()
-    if self._sc == nil or self.ControlButtons == nil or #self.ControlButtons == 0 then return end
     SetScriptGfxDrawBehindPausemenu(true)
     self._sc:Render2D()
 end
 
 ---Draws the instructional buttons on the screen with a custom position
 function ButtonsHandler:DrawScreenSpace(x, y)
-    if self._sc == nil or self.ControlButtons == nil or #self.ControlButtons == 0 then return end
     self._sc:Render2DNormal(0.5 - x, 0.5 - y, 1, 1)
 end
 
 ---Draws the instructional buttons on the screen with a custom position
 ---@deprecated Use DrawScreenSpace() instead
 function ButtonsHandler:DrawScreeSpace(x, y)
-    if self._sc == nil or self.ControlButtons == nil or #self.ControlButtons == 0 then return end
     self._sc:Render2DNormal(0.5 - x, 0.5 - y, 1, 1)
 end
 
 ---Update tick for the instructional buttons
 function ButtonsHandler:Update()
-    if #self.ControlButtons == 0 and not self.IsSaving then return end
-    ScaleformUI.WaitTime = 0
-    if self._sc == nil then self:Load() end
     if IsUsingKeyboard(2) then
         if not self.IsUsingKeyboard then
             self.IsUsingKeyboard = true

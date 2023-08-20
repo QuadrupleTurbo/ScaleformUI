@@ -206,7 +206,7 @@ end
 ---@param tab number
 ---@param leftItemIndex number
 ---@param label string
-function PauseMenu:AddRightListLabel(tab, leftItemIndex, label, fontName, fontId)
+function PauseMenu:AddRightListLabel(tab, leftItemIndex, label)
     AddTextEntry("PauseMenu_" .. tab .. "_" .. leftItemIndex, label)
     BeginScaleformMovieMethod(self._pause.handle, "ADD_RIGHT_LIST_ITEM")
     ScaleformMovieMethodAddParamInt(tab)
@@ -214,8 +214,6 @@ function PauseMenu:AddRightListLabel(tab, leftItemIndex, label, fontName, fontId
     ScaleformMovieMethodAddParamInt(0)
     BeginTextCommandScaleformString("PauseMenu_" .. tab .. "_" .. leftItemIndex)
     EndTextCommandScaleformString_2()
-    ScaleformMovieMethodAddParamPlayerNameString(fontName)
-    ScaleformMovieMethodAddParamInt(fontId)
     EndScaleformMovieMethod()
 end
 
@@ -224,8 +222,8 @@ end
 ---@param leftItemIndex number
 ---@param label string
 ---@param rightLabel string
-function PauseMenu:AddRightStatItemLabel(tab, leftItemIndex, label, rightLabel, labelFont, rLabelFont)
-    self._pause:CallFunction("ADD_RIGHT_LIST_ITEM", false, tab, leftItemIndex, 1, 0, label, rightLabel, -1, labelFont.FontName, labelFont.FontID, rLabelFont.FontName, rLabelFont.FontID)
+function PauseMenu:AddRightStatItemLabel(tab, leftItemIndex, label, rightLabel)
+    self._pause:CallFunction("ADD_RIGHT_LIST_ITEM", false, tab, leftItemIndex, 1, 0, label, rightLabel)
 end
 
 ---Add a right stat item colour bar to a tab and left item
@@ -234,8 +232,8 @@ end
 ---@param label string
 ---@param value number
 ---@param barColor Colours? - Sets the color of the bar (default: Colours.NONE)
-function PauseMenu:AddRightStatItemColorBar(tab, leftItemIndex, label, value, barColor, labelFont)
-    self._pause:CallFunction("ADD_RIGHT_LIST_ITEM", false, tab, leftItemIndex, 1, 1, label, value, barColor, labelFont.FontName, labelFont.FontID)
+function PauseMenu:AddRightStatItemColorBar(tab, leftItemIndex, label, value, barColor)
+    self._pause:CallFunction("ADD_RIGHT_LIST_ITEM", false, tab, leftItemIndex, 1, 1, label, value, barColor)
 end
 
 ---Add a right settings base item to a tab and left item

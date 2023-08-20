@@ -1,5 +1,4 @@
 ﻿
-using ScaleformUI.Elements;
 using System.Drawing;
 using Font = CitizenFX.Core.UI.Font;
 
@@ -57,7 +56,7 @@ namespace ScaleformUI
 
             base.Draw(interval);
 
-            PointF start = new PointF((int)res.Width - safe.X - 160, (int)res.Height - safe.Y - (28 + (4 * interval)));
+            var start = new PointF((int)res.Width - safe.X - 160, (int)res.Height - safe.Y - (28 + (4 * interval)));
 
             _background.Position = start;
             _foreground.Position = start;
