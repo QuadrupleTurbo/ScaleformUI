@@ -926,7 +926,7 @@ namespace ScaleformUI
         public List<UIMenuItem> MenuItems = new List<UIMenuItem>();
 
         public bool MouseEdgeEnabled = true;
-        public bool ControlDisablingEnabled = true;
+        public bool ControlDisablingEnabled = false;
         public bool BuildAsync = true;
         public bool EnableAnimation
         {
@@ -2254,7 +2254,8 @@ namespace ScaleformUI
                 UIMenuItem item = MenuItems[i];
                 int index = i;
 
-                AddTextEntry($"menu_{_poolcontainer._menuList.IndexOf(this)}_desc_{index}", item.Description);
+                if (item.Description != null)
+                    AddTextEntry($"menu_{_poolcontainer._menuList.IndexOf(this)}_desc_{index}", item.Description);
 
                 BeginScaleformMovieMethod(ScaleformUI._ui.Handle, "ADD_ITEM");
                 PushScaleformMovieFunctionParameterInt(item._itemId);
