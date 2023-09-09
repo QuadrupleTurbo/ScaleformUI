@@ -550,6 +550,7 @@ end
 
 ---Clear
 function UIMenu:Clear()
+    self.Pagination:CurrentMenuIndex(1)
     self.Items = {}
     self.Pagination:TotalItems(0)
     if self:Visible() then
@@ -593,8 +594,7 @@ function UIMenu:Visible(bool)
             MenuHandler.ableToDraw = false
         end
         if self.Settings.ResetCursorOnOpen then
-            local W, H = GetScreenResolution()
-            SetCursorLocation(W / 2, H / 2)
+            SetCursorLocation(0.5, 0.5)
         end
     else
         return self._Visible
@@ -937,8 +937,8 @@ function UIMenu:ProcessControl()
         end
     end
 
-    if self.Controls.Select.Enabled and ((IsDisabledControlJustPressed(0, 201) or IsDisabledControlJustPressed(1, 201) or IsDisabledControlJustPressed(2, 201)) or
-            (IsDisabledControlJustPressed(0, 24) or IsDisabledControlJustPressed(1, 24) or IsDisabledControlJustPressed(2, 24)) and not self.Settings.MouseControlsEnabled) then
+    if self.Controls.Select.Enabled and (IsDisabledControlJustPressed(0, 201) or IsDisabledControlJustPressed(1, 201) or IsDisabledControlJustPressed(2, 201)) or
+            ((IsDisabledControlJustPressed(0, 24) or IsDisabledControlJustPressed(1, 24) or IsDisabledControlJustPressed(2, 24)) and self.Settings.MouseControlsEnabled) then
         Citizen.CreateThread(function()
             self:SelectItem()
             Citizen.Wait(125)
@@ -1437,6 +1437,15 @@ function UIMenu:ProcessMouse()
             StopSound(menuSound)
             ReleaseSoundId(menuSound)
         end
+    end
+    if IsMouseInBounds(0, 0, 30, 1080) and self.Settings.MouseEdgeEnabled then
+        SetGameplayCamRelativeHeading(GetGameplayCamRelativeHeading() + 5)
+        SetCursorSprite(6)
+    elseif IsMouseInBounds(1920 - 30, 0, 30, 1080) and self.Settings.MouseEdgeEnabled then
+        SetGameplayCamRelativeHeading(GetGameplayCamRelativeHeading() - 5)
+        SetCursorSprite(7)
+    elseif self.Settings.MouseEdgeEnabled then
+        SetCursorSprite(1)
     end
 end
 
