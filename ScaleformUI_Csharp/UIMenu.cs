@@ -1792,7 +1792,17 @@ namespace ScaleformUI
                 }
             }
 
-            if (ScreenTools.IsMouseInBounds(new PointF(0, 0), new SizeF(30, 1080)) && MouseEdgeEnabled)
+            if (ScreenTools.IsMouseInBounds(new PointF(0, Convert.ToInt32(Resolution.Height - 30f)), new SizeF(1920, 30)) && MouseEdgeEnabled)
+            {
+                GameplayCamera.RelativePitch += 3f;
+                SetCursorSprite(9);
+            }
+            else if (ScreenTools.IsMouseInBounds(new PointF(0, -1), new SizeF(1920, 30)) && MouseEdgeEnabled)
+            {
+                GameplayCamera.RelativePitch -= 2f;
+                SetCursorSprite(8);
+            }
+            else if (ScreenTools.IsMouseInBounds(new PointF(0, 0), new SizeF(30, 1080)) && MouseEdgeEnabled)
             {
                 GameplayCamera.RelativeHeading += 5f;
                 SetCursorSprite(6);
@@ -2170,7 +2180,7 @@ namespace ScaleformUI
                 _justOpened = value;
                 _itemsDirty = value;
                 if (ParentMenu is not null) return;
-                if (Children.Count > 0 && Children.ContainsKey(MenuItems[CurrentSelection]) && Children[MenuItems[CurrentSelection]].Visible) return;
+                //if (Children.Count > 0 && Children.ContainsKey(MenuItems[CurrentSelection]) && Children[MenuItems[CurrentSelection]].Visible) return;
                 ScaleformUI.InstructionalButtons.Enabled = value;
                 ScaleformUI.InstructionalButtons.SetInstructionalButtons(InstructionalButtons);
                 if (value)
