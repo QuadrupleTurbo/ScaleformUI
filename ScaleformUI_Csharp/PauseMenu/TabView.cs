@@ -38,10 +38,19 @@ namespace ScaleformUI.PauseMenu
             get => leftItemIndex;
             set
             {
+                Tabs[Index].LeftItemList[leftItemIndex].Selected = false;
                 leftItemIndex = value;
+                if (TabIndexes.ContainsKey(Tabs[Index]))
+                    TabIndexes[Tabs[Index]] = value;
+                else
+                    TabIndexes.Add(Tabs[Index], value);
+                Tabs[Index].LeftItemList[leftItemIndex].Selected = true;
                 SendPauseMenuLeftItemChange();
             }
         }
+
+        public Dictionary<BaseTab, int> TabIndexes { get; set; } = new Dictionary<BaseTab, int>();
+
         public int RightItemIndex
         {
             get => rightItemIndex;
@@ -479,12 +488,23 @@ namespace ScaleformUI.PauseMenu
                         SetPauseMenuPedLighting(FocusLevel != 0);
                     }
                     if (Tabs[Index].LeftItemList.All(x => !x.Enabled)) break;
+
+                    // We don't want to take on an index from the previous tab
+                    if (leftItemIndex > (Tabs[Index].LeftItemList.Count - 1))
+                        leftItemIndex = Tabs[Index].LeftItemList.Count - 1;
+
+                    //Debug.WriteLine($"{Tabs[Index].LeftItemList.Count - 1}:{leftItemIndex}:{LeftItemIndex}");
+
                     while (!Tabs[Index].LeftItemList[leftItemIndex].Enabled)
                     {
                         await BaseScript.Delay(0);
                         leftItemIndex++;
                         _pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", leftItemIndex);
                     }
+
+                    //if (TabIndexes.ContainsKey(Tabs[Index]))
+                        Debug.WriteLine(TabIndexes[Tabs[Index]].ToString());
+
                     break;
                 case 1:
                     {
@@ -507,6 +527,13 @@ namespace ScaleformUI.PauseMenu
                                     _pause._pause.CallFunction("SELECT_RIGHT_ITEM_INDEX", rightItemIndex);
                                 }
                             }
+                            else if (leftItem.ItemType == LeftItemType.Info)
+                            {
+                                _pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", LeftItemIndex);
+                                Tabs[Index].LeftItemList[LeftItemIndex].Activated();
+                            }
+                            //_pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", itemId);
+                            //Tabs[Index].LeftItemList[LeftItemIndex].Activated();
                             SendPauseMenuLeftItemSelect();
                         }
                         else if (Tabs[Index] is PlayerListTab plTab)
@@ -897,16 +924,23 @@ namespace ScaleformUI.PauseMenu
                                 _pause.SelectTab(itemId);
                                 FocusLevel = 1;
                                 Index = itemId;
+                                LeftItemIndex = itemId;
                                 if (Tabs[Index] is PlayerListTab tab)
-                                    tab.PlayersColumn.Items[tab.PlayersColumn.CurrentSelection].CreateClonedPed();
+                                {
+                                    if (tab.PlayersColumn.Items[tab.PlayersColumn.CurrentSelection].ClonePed != null)
+                                        tab.PlayersColumn.Items[tab.PlayersColumn.CurrentSelection].CreateClonedPed();
+                                    else
+                                        ClearPedInPauseMenu();
+                                }
                                 else
                                     ClearPedInPauseMenu();
                                 Game.PlaySound("SELECT", "HUD_FRONTEND_DEFAULT_SOUNDSET");
                                 if (Tabs[Index].LeftItemList.All(x => !x.Enabled)) break;
+                                Tabs[Index].LeftItemList[LeftItemIndex].Selected = true;
                                 while (!Tabs[Index].LeftItemList[leftItemIndex].Enabled)
                                 {
                                     await BaseScript.Delay(0);
-                                    leftItemIndex++;
+                                    LeftItemIndex++;
                                     _pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", leftItemIndex);
                                 }
                                 break;
@@ -988,6 +1022,19 @@ namespace ScaleformUI.PauseMenu
                                             FocusLevel = 2;
                                             _pause._pause.CallFunction("SELECT_RIGHT_ITEM_INDEX", 0);
                                             RightItemIndex = 0;
+                                        }
+                                        else if (Tabs[Index].LeftItemList[LeftItemIndex].ItemType == LeftItemType.Info)
+                                        {
+                                            if (LeftItemIndex == itemId)
+                                            {
+                                                Tabs[Index].LeftItemList[itemId].Activated();
+                                            }
+                                            Tabs[Index].LeftItemList[LeftItemIndex].Selected = false;
+                                            LeftItemIndex = itemId;
+                                            Tabs[Index].LeftItemList[LeftItemIndex].Selected = true;
+                                            _pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", itemId);
+                                            SendPauseMenuLeftItemSelect();
+                                            break;
                                         }
                                         Tabs[Index].LeftItemList[LeftItemIndex].Selected = false;
                                         LeftItemIndex = itemId;

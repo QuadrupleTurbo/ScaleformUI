@@ -144,7 +144,7 @@ namespace ScaleformUI
 
         public void Dispose()
         {
-            if (_clonePed.Exists())
+            if (_clonePed != null && _clonePed.Exists())
             {
                 _clonePed.Delete();
             }
