@@ -864,6 +864,8 @@ namespace ScaleformUI
 
         internal KeyValuePair<string, string> _customTexture;
 
+        public bool CanPlayerOpenMenu = true;
+
         /// <summary>
         /// Players won't be able to close the menu if this is false! Make sure players can close the menu in some way!!!!!!
         /// </summary>
@@ -1590,6 +1592,7 @@ namespace ScaleformUI
         int unused = 0;
         bool cursorPressed;
         private KeyValuePair<string, int> descriptionFont = new("$Font2", 0);
+        private Color _subTitleColour;
 
         /// <summary>
         /// Process the mouse's position and check if it's hovering over any UI element. Call this in OnTick
@@ -2176,36 +2179,39 @@ namespace ScaleformUI
             get { return _visible; }
             set
             {
-                _visible = value;
-                _justOpened = value;
-                _itemsDirty = value;
-                if (ParentMenu is not null) return;
-                //if (Children.Count > 0 && Children.ContainsKey(MenuItems[CurrentSelection]) && Children[MenuItems[CurrentSelection]].Visible) return;
-                ScaleformUI.InstructionalButtons.Enabled = value;
-                ScaleformUI.InstructionalButtons.SetInstructionalButtons(InstructionalButtons);
-                if (value)
+                if (this.CanPlayerOpenMenu)
                 {
-                    _poolcontainer.MenuChangeEv(null, this, MenuState.Opened);
-                    MenuChangeEv(null, this, MenuState.Opened);
-                    if (BuildAsync)
-                        BuildUpMenuAsync();
+                    _visible = value;
+                    _justOpened = value;
+                    _itemsDirty = value;
+                    if (ParentMenu is not null) return;
+                    //if (Children.Count > 0 && Children.ContainsKey(MenuItems[CurrentSelection]) && Children[MenuItems[CurrentSelection]].Visible) return;
+                    ScaleformUI.InstructionalButtons.Enabled = value;
+                    ScaleformUI.InstructionalButtons.SetInstructionalButtons(InstructionalButtons);
+                    if (value)
+                    {
+                        _poolcontainer.MenuChangeEv(null, this, MenuState.Opened);
+                        MenuChangeEv(null, this, MenuState.Opened);
+                        if (BuildAsync)
+                            BuildUpMenuAsync();
+                        else
+                            BuildUpMenuSync();
+                        _poolcontainer.currentMenu = this;
+                        _poolcontainer.ProcessMenus(true);
+                        timeBeforeOverflow = ScaleformUI.GameTime;
+                    }
                     else
-                        BuildUpMenuSync();
-                    _poolcontainer.currentMenu = this;
-                    _poolcontainer.ProcessMenus(true);
-                    timeBeforeOverflow = ScaleformUI.GameTime;
+                    {
+                        _poolcontainer.MenuChangeEv(this, null, MenuState.Closed);
+                        MenuChangeEv(this, null, MenuState.Closed);
+                        ScaleformUI._ui.CallFunction("CLEAR_ALL");
+                        _poolcontainer.ProcessMenus(false);
+                    }
+                    if (!value) return;
+                    if (!ResetCursorOnOpen) return;
+                    SetCursorLocation(0.5f, 0.5f);
+                    Screen.Hud.CursorSprite = CursorSprite.Normal;
                 }
-                else
-                {
-                    _poolcontainer.MenuChangeEv(this, null, MenuState.Closed);
-                    MenuChangeEv(this, null, MenuState.Closed);
-                    ScaleformUI._ui.CallFunction("CLEAR_ALL");
-                    _poolcontainer.ProcessMenus(false);
-                }
-                if (!value) return;
-                if (!ResetCursorOnOpen) return;
-                SetCursorLocation(0.5f, 0.5f);
-                Screen.Hud.CursorSprite = CursorSprite.Normal;
             }
         }
 
@@ -2216,7 +2222,7 @@ namespace ScaleformUI
             bool _animEnabled = EnableAnimation;
             EnableAnimation = false;
             while (!ScaleformUI._ui.IsLoaded) await BaseScript.Delay(0);
-            ScaleformUI._ui.CallFunction("CREATE_MENU", Title, Subtitle, Offset.X, Offset.Y, AlternativeTitle, _customTexture.Key, _customTexture.Value, MaxItemsOnScreen, EnableAnimation, (int)AnimationType, (int)buildingAnimation, (int)counterColor, descriptionFont.Key, descriptionFont.Value);
+            ScaleformUI._ui.CallFunction("CREATE_MENU", Title, $"<FONT COLOR='#{MenuPool.ThemeColour.R:X2}{MenuPool.ThemeColour.G:X2}{MenuPool.ThemeColour.B:X2}'>{Subtitle}", Offset.X, Offset.Y, AlternativeTitle, _customTexture.Key, _customTexture.Value, MaxItemsOnScreen, EnableAnimation, (int)AnimationType, (int)buildingAnimation, (int)counterColor, descriptionFont.Key, descriptionFont.Value);
             if (Windows.Count > 0)
             {
                 foreach (UIMenuWindow wind in Windows)
@@ -2446,7 +2452,7 @@ namespace ScaleformUI
         internal async void BuildUpMenuSync()
         {
             while (!ScaleformUI._ui.IsLoaded) await BaseScript.Delay(0);
-            ScaleformUI._ui.CallFunction("CREATE_MENU", Title, Subtitle, Offset.X, Offset.Y, AlternativeTitle, _customTexture.Key, _customTexture.Value, MaxItemsOnScreen, EnableAnimation, (int)AnimationType, (int)buildingAnimation, (int)counterColor, descriptionFont.Key, descriptionFont.Value);
+            ScaleformUI._ui.CallFunction("CREATE_MENU", Title, $"<FONT COLOR='#{MenuPool.ThemeColour.R:X2}{MenuPool.ThemeColour.G:X2}{MenuPool.ThemeColour.B:X2}'>{Subtitle}", Offset.X, Offset.Y, AlternativeTitle, _customTexture.Key, _customTexture.Value, MaxItemsOnScreen, EnableAnimation, (int)AnimationType, (int)buildingAnimation, (int)counterColor, descriptionFont.Key, descriptionFont.Value);
             if (Windows.Count > 0)
             {
                 foreach (UIMenuWindow wind in Windows)
@@ -2719,6 +2725,23 @@ namespace ScaleformUI
                 if (Visible)
                 {
                     ScaleformUI._ui.CallFunction("UPDATE_TITLE_SUBTITLE", title, subtitle, AlternativeTitle);
+                }
+            }
+        }
+
+        public Color SubTitleColour
+        {
+            get
+            {
+                return this._subTitleColour;
+            }
+            set
+            {
+                this._subTitleColour = value;
+                this.subtitle = string.Format("<FONT COLOR='#{0:X2}{1:X2}{2:X2}'>{3}", value.R, value.G, value.B, this.subtitle);
+                if (this.Visible)
+                {
+                    ScaleformUI._ui.CallFunction("UPDATE_TITLE_SUBTITLE", this.title, this.subtitle, this.AlternativeTitle);
                 }
             }
         }

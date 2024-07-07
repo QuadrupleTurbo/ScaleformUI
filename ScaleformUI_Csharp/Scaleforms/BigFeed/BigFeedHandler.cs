@@ -13,6 +13,7 @@ namespace ScaleformUI
         private string bodyText = "";
         private string textureDictionary = "";
         private string textureName = "";
+        private InputMode _currInputMode;
 
         /// <summary>
         /// Decides if the feed is centered or right aligned, *MUST* be called before Enabled
@@ -65,7 +66,7 @@ namespace ScaleformUI
                 bodyText = value;
                 if (Enabled)
                 {
-                    UpdateInfo();
+                    //UpdateInfo();
                 }
             }
         }
@@ -146,6 +147,15 @@ namespace ScaleformUI
             PushScaleformMovieFunctionParameterString(title);
             PushScaleformMovieFunctionParameterInt(0);
             EndScaleformMovieMethod();
+        }
+
+        public void UpdateBodyTextThisFrame()
+        {
+            if (this._currInputMode != Game.CurrentInputMode)
+            {
+                this._currInputMode = Game.CurrentInputMode;
+                this.UpdateInfo();
+            }
         }
 
         internal async void Update()

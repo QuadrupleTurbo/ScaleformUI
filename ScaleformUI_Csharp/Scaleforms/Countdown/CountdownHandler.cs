@@ -91,7 +91,8 @@ namespace ScaleformUI.Scaleforms.Countdown
             while (_sc != null && _sc.IsLoaded)
             {
                 await BaseScript.Delay(0);
-                _sc.Render2D();
+                if (_sc != null)
+                    _sc.Render2D();
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using ScaleformUI.PauseMenu;
+﻿using CitizenFX.Core;
+using ScaleformUI.PauseMenu;
 using System.Collections.Generic;
 
 namespace ScaleformUI.LobbyMenu
@@ -48,6 +49,45 @@ namespace ScaleformUI.LobbyMenu
             Items.RemoveAt(id);
         }
 
+        public void RemoveAllPlayers()
+        {
+            if (Parent != null && Parent.Visible)
+            {
+                foreach (var item in GetAllFriendItems())
+                {
+                    if (Parent is MainView lobby)
+                        lobby._pause._lobby.CallFunction("REMOVE_PLAYER_ITEM", Items.IndexOf(item));
+                    else if (Parent is TabView pause)
+                        pause._pause._lobby.CallFunction("REMOVE_PLAYERS_TAB_PLAYER_ITEM", ParentTab, Items.IndexOf(item));
+                }
+            }
+            Items.Clear();
+        }
+
+        public void RemovePlayerByName(string name)
+        {
+            var id = GetAllFriendItems().FindIndex(x => x.Label == name);
+            if (id == -1)
+            {
+                Debug.WriteLine("PlayerListColumn.RemovePlayerByName: Player not found: " + name + ".");
+                return;
+            }
+
+            if (Parent != null && Parent.Visible)
+            {
+                if (Parent is MainView lobby)
+                    lobby._pause._lobby.CallFunction("REMOVE_PLAYER_ITEM", id);
+                else if (Parent is TabView pause)
+                    pause._pause._lobby.CallFunction("REMOVE_PLAYERS_TAB_PLAYER_ITEM", ParentTab, id);
+            }
+            Items.RemoveAt(id);
+        }
+
+        public bool ContainsPlayer(string name)
+        {
+            return GetAllFriendItems().Exists(x => x.Label == name);
+        }
+
         public int CurrentSelection
         {
             get { return Items.Count == 0 ? 0 : currentSelection % Items.Count; }
@@ -70,6 +110,19 @@ namespace ScaleformUI.LobbyMenu
         public void IndexChangedEvent()
         {
             OnIndexChanged?.Invoke(CurrentSelection);
+        }
+
+        private List<FriendItem> GetAllFriendItems()
+        {
+            List<FriendItem> friendItems = new List<FriendItem>();
+            foreach (var item in Items)
+            {
+                if (item is FriendItem friendItem)
+                {
+                    friendItems.Add(friendItem);
+                }
+            }
+            return friendItems;
         }
     }
 }

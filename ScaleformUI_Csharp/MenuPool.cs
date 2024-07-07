@@ -65,6 +65,8 @@ namespace ScaleformUI
         internal readonly List<UIMenu> _menuList = new List<UIMenu>();
         internal readonly List<PauseMenuBase> _pauseMenuList = new List<PauseMenuBase>();
 
+        public static Color ThemeColour = Color.FromArgb(255, 255, 255);
+
         /// <summary>
         /// Add your menu to the menu pool.
         /// </summary>
@@ -324,6 +326,11 @@ namespace ScaleformUI
         public void MenuChangeEv(UIMenu oldmenu, UIMenu newmenu, MenuState state)
         {
             OnMenuStateChanged?.Invoke(oldmenu, newmenu, state);
+        }
+
+        public void UpdateThemeColour(Color colour)
+        {
+            ThemeColour = colour;
         }
     }
 }

@@ -42,12 +42,10 @@ namespace ScaleformUI
 
         public override void Draw(int interval)
         {
-            if (!Enabled) return;
-            SizeF res = ScreenTools.ResolutionMaintainRatio;
-            PointF safe = ScreenTools.SafezoneBounds;
-
+            SizeF resolutionMaintainRatio = ScreenTools.ResolutionMaintainRatio;
+            PointF pointF = ScreenTools.SafezoneBounds;
             base.Draw(interval);
-            new UIResText(Caption, new PointF((int)res.Width - safe.X - 10, (int)res.Height - safe.Y - (42 + (4 * interval))), 0.5f, CaptionColor, LabelFont, Alignment.Right).Draw();
+            new UIResText(this.Caption, new PointF((float)(int)resolutionMaintainRatio.Width - pointF.X - 160f, (float)(int)resolutionMaintainRatio.Height - pointF.Y - (float)(502 + 4 * interval)), 0.5f, this.CaptionColor, base.LabelFont, Alignment.Left).Draw();
         }
     }
 }
