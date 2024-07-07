@@ -2192,37 +2192,27 @@ namespace ScaleformUI
                 ScaleformUI.InstructionalButtons.SetInstructionalButtons(InstructionalButtons);
                 if (value)
                 {
-                    _visible = value;
-                    _justOpened = value;
-                    _itemsDirty = value;
-                    if (ParentMenu is not null) return;
-                    //if (Children.Count > 0 && Children.ContainsKey(MenuItems[CurrentSelection]) && Children[MenuItems[CurrentSelection]].Visible) return;
-                    ScaleformUI.InstructionalButtons.Enabled = value;
-                    ScaleformUI.InstructionalButtons.SetInstructionalButtons(InstructionalButtons);
-                    if (value)
-                    {
-                        _poolcontainer.MenuChangeEv(null, this, MenuState.Opened);
-                        MenuChangeEv(null, this, MenuState.Opened);
-                        if (BuildAsync)
-                            BuildUpMenuAsync();
-                        else
-                            BuildUpMenuSync();
-                        _poolcontainer.currentMenu = this;
-                        _poolcontainer.ProcessMenus(true);
-                        timeBeforeOverflow = ScaleformUI.GameTime;
-                    }
+                    _poolcontainer.MenuChangeEv(null, this, MenuState.Opened);
+                    MenuChangeEv(null, this, MenuState.Opened);
+                    if (BuildAsync)
+                        BuildUpMenuAsync();
                     else
-                    {
-                        _poolcontainer.MenuChangeEv(this, null, MenuState.Closed);
-                        MenuChangeEv(this, null, MenuState.Closed);
-                        ScaleformUI._ui.CallFunction("CLEAR_ALL");
-                        _poolcontainer.ProcessMenus(false);
-                    }
-                    if (!value) return;
-                    if (!ResetCursorOnOpen) return;
-                    SetCursorLocation(0.5f, 0.5f);
-                    Screen.Hud.CursorSprite = CursorSprite.Normal;
+                        BuildUpMenuSync();
+                    _poolcontainer.currentMenu = this;
+                    _poolcontainer.ProcessMenus(true);
+                    timeBeforeOverflow = ScaleformUI.GameTime;
                 }
+                else
+                {
+                    _poolcontainer.MenuChangeEv(this, null, MenuState.Closed);
+                    MenuChangeEv(this, null, MenuState.Closed);
+                    ScaleformUI._ui.CallFunction("CLEAR_ALL");
+                    _poolcontainer.ProcessMenus(false);
+                }
+                if (!value) return;
+                if (!ResetCursorOnOpen) return;
+                SetCursorLocation(0.5f, 0.5f);
+                Screen.Hud.CursorSprite = CursorSprite.Normal;
             }
         }
 
