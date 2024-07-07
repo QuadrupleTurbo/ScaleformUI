@@ -64,10 +64,6 @@ namespace ScaleformUI
             set
             {
                 bodyText = value;
-                if (Enabled)
-                {
-                    //UpdateInfo();
-                }
             }
         }
 
@@ -89,36 +85,42 @@ namespace ScaleformUI
                 enabled = value;
                 if (value)
                 {
-                    _sc.CallFunction("SETUP_BIGFEED", RightAligned);
-                    _sc.CallFunction("HIDE_ONLINE_LOGO");
-                    _sc.CallFunction("FADE_IN_BIGFEED");
-                    if (DisabledNotifications)
-                        ThefeedCommentTeleportPoolOn();
-                    UpdateInfo();
+                    Load(value);
                 }
                 else
                 {
-                    _sc.CallFunction("END_BIGFEED");
-                    //_sc.CallFunction("END_BIGFEED");
-                    if (DisabledNotifications)
-                        ThefeedCommentTeleportPoolOff();
+                    Dispose();
                 }
             }
         }
 
-        public BigFeedHandler() { Load(); }
+        public BigFeedHandler() { Load(false); }
 
-        private async void Load()
+        private async void Load(bool run)
         {
-            if (_sc != null) return;
             _sc = new ScaleformWideScreen("GTAV_ONLINE");
             int timeout = 1000;
             int start = ScaleformUI.GameTime;
             while (!_sc.IsLoaded && ScaleformUI.GameTime - start < timeout) await BaseScript.Delay(0);
             _sc.CallFunction("HIDE_ONLINE_LOGO");
+
+            if (run)
+            {
+                _sc.CallFunction("SETUP_BIGFEED", RightAligned);
+                _sc.CallFunction("HIDE_ONLINE_LOGO");
+                _sc.CallFunction("FADE_IN_BIGFEED");
+                if (DisabledNotifications)
+                    ThefeedCommentTeleportPoolOn();
+                UpdateInfo();
+            }
         }
-        private void Dispose()
+        private async void Dispose()
         {
+            _sc.CallFunction("END_BIGFEED");
+            //_sc.CallFunction("END_BIGFEED");
+            if (DisabledNotifications)
+                ThefeedCommentTeleportPoolOff();
+            await BaseScript.Delay(1000);
             _sc.Dispose();
             _sc = null;
         }
@@ -151,10 +153,11 @@ namespace ScaleformUI
 
         public void UpdateBodyTextThisFrame()
         {
-            if (this._currInputMode != Game.CurrentInputMode)
+            // Ok big brain time
+            if (_currInputMode != Game.CurrentInputMode)
             {
-                this._currInputMode = Game.CurrentInputMode;
-                this.UpdateInfo();
+                _currInputMode = Game.CurrentInputMode;
+                UpdateInfo();
             }
         }
 

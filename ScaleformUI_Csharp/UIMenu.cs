@@ -899,6 +899,7 @@ namespace ScaleformUI
         private MenuBuildingAnimation buildingAnimation = MenuBuildingAnimation.LEFT;
         private string title;
         private string subtitle;
+        
         private HudColor counterColor = HudColor.HUD_COLOUR_FREEMODE;
 
         public bool Glare { get; set; }
@@ -930,6 +931,7 @@ namespace ScaleformUI
         public bool MouseEdgeEnabled = true;
         public bool ControlDisablingEnabled = false;
         public bool BuildAsync = true;
+        public bool BuildingEnabled = true;
         public bool EnableAnimation
         {
             get => enableAnimation;
@@ -1838,7 +1840,7 @@ namespace ScaleformUI
                 ParentMenu.canBuild = true;
                 ParentMenu._visible = true;
                 if (ParentMenu.BuildAsync)
-                    ParentMenu.BuildUpMenuAsync();
+                    ParentMenu.BuildUpMenuAsync(true);
                 else
                     ParentMenu.BuildUpMenuSync();
             }
@@ -2179,7 +2181,16 @@ namespace ScaleformUI
             get { return _visible; }
             set
             {
-                if (this.CanPlayerOpenMenu)
+                if (!CanPlayerOpenMenu) return;
+
+                _visible = value;
+                _justOpened = value;
+                _itemsDirty = value;
+                if (ParentMenu is not null) return;
+                //if (Children.Count > 0 && Children.ContainsKey(MenuItems[CurrentSelection]) && Children[MenuItems[CurrentSelection]].Visible) return;
+                ScaleformUI.InstructionalButtons.Enabled = value;
+                ScaleformUI.InstructionalButtons.SetInstructionalButtons(InstructionalButtons);
+                if (value)
                 {
                     _visible = value;
                     _justOpened = value;
@@ -2215,14 +2226,17 @@ namespace ScaleformUI
             }
         }
 
-        internal async void BuildUpMenuAsync()
+        internal async void BuildUpMenuAsync(bool buildingDisabledBypass = false)
         {
+            if (!BuildingEnabled && !buildingDisabledBypass)
+                return;
+
             isBuilding = true;
             ScaleformUI._ui.CallFunction("IS_BUILDING", true);
             bool _animEnabled = EnableAnimation;
             EnableAnimation = false;
-            while (!ScaleformUI._ui.IsLoaded) await BaseScript.Delay(0);
-            ScaleformUI._ui.CallFunction("CREATE_MENU", Title, $"<FONT COLOR='#{MenuPool.ThemeColour.R:X2}{MenuPool.ThemeColour.G:X2}{MenuPool.ThemeColour.B:X2}'>{Subtitle}", Offset.X, Offset.Y, AlternativeTitle, _customTexture.Key, _customTexture.Value, MaxItemsOnScreen, EnableAnimation, (int)AnimationType, (int)buildingAnimation, (int)counterColor, descriptionFont.Key, descriptionFont.Value);
+            while (!ScaleformUI._ui.IsLoaded) await BaseScript.Delay(1);
+            ScaleformUI._ui.CallFunction("CREATE_MENU", Title, $"<FONT COLOR=\'#{MenuPool.ThemeColour.R:X2}{MenuPool.ThemeColour.G:X2}{MenuPool.ThemeColour.B:X2}\'>{Subtitle}", Offset.X, Offset.Y, AlternativeTitle, _customTexture.Key, _customTexture.Value, MaxItemsOnScreen, EnableAnimation, (int)AnimationType, (int)buildingAnimation, (int)counterColor, descriptionFont.Key, descriptionFont.Value);
             if (Windows.Count > 0)
             {
                 foreach (UIMenuWindow wind in Windows)
@@ -2447,6 +2461,8 @@ namespace ScaleformUI
             ScaleformUI._ui.CallFunction("ENABLE_MOUSE", MouseControlsEnabled);
             EnableAnimation = _animEnabled;
             isBuilding = false;
+
+            await Task.FromResult(0);
         }
 
         internal async void BuildUpMenuSync()
@@ -2664,6 +2680,17 @@ namespace ScaleformUI
         }
 
         /// <summary>
+        /// For menus that aren't built right away, but instead after menu open, call this to refresh.
+        /// </summary>
+        public async void ForceBuildAsync()
+        {
+            await BaseScript.Delay(50);
+            //Debug.WriteLine($"Forced: {ParentItem.Label}");
+            if (Visible)
+                BuildUpMenuAsync(true);
+        }
+
+        /// <summary>
         /// Returns the current selected item's index.
         /// Change the current selected item to index. Use this after you add or remove items dynamically.
         /// </summary>
@@ -2712,7 +2739,6 @@ namespace ScaleformUI
             }
         }
 
-
         /// <summary>
         /// Returns the subtitle object.
         /// </summary>
@@ -2742,6 +2768,24 @@ namespace ScaleformUI
                 if (this.Visible)
                 {
                     ScaleformUI._ui.CallFunction("UPDATE_TITLE_SUBTITLE", this.title, this.subtitle, this.AlternativeTitle);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the CounterText color.
+        /// </summary>
+        public Color SubTitleColour
+        {
+            get => _subTitleColour;
+            set
+            {
+                _subTitleColour = value;
+                subtitle = $"<FONT COLOR=\'#{value.R:X2}{value.G:X2}{value.B:X2}\'>{subtitle}";
+
+                if (Visible)
+                {
+                    ScaleformUI._ui.CallFunction("UPDATE_TITLE_SUBTITLE", title, subtitle, AlternativeTitle);
                 }
             }
         }

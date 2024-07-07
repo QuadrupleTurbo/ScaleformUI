@@ -1,6 +1,7 @@
 ﻿using CitizenFX.Core;
 using ScaleformUI.PauseMenu;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ScaleformUI.LobbyMenu
 {
@@ -94,9 +95,12 @@ namespace ScaleformUI.LobbyMenu
             set
             {
                 if (Items.Count == 0) currentSelection = 0;
-                Items[CurrentSelection].Selected = false;
+                //if (CurrentSelection < Items.Count - 1) currentSelection = 0;
+                if (CurrentSelection >= 0 && CurrentSelection < Items.Count - 1)
+                    Items[CurrentSelection].Selected = false;
                 currentSelection = value < 0 ? 0 : value >= Items.Count ? Items.Count - 1 : 1000000 - (1000000 % Items.Count) + value;
-                Items[CurrentSelection].Selected = true;
+                if (CurrentSelection >= 0 && CurrentSelection < Items.Count - 1)
+                    Items[CurrentSelection].Selected = true;
                 if (Parent != null && Parent.Visible)
                 {
                     if (Parent is MainView lobby)

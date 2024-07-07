@@ -1,4 +1,5 @@
-﻿using CitizenFX.Core.UI;
+﻿using CitizenFX.Core.Native;
+using CitizenFX.Core.UI;
 using System.Drawing;
 using Font = CitizenFX.Core.UI.Font;
 
@@ -42,10 +43,12 @@ namespace ScaleformUI
 
         public override void Draw(int interval)
         {
-            SizeF resolutionMaintainRatio = ScreenTools.ResolutionMaintainRatio;
-            PointF pointF = ScreenTools.SafezoneBounds;
+            //if (!Enabled) return;
+            SizeF res = ScreenTools.ResolutionMaintainRatio;
+            PointF safe = ScreenTools.SafezoneBounds;
+
             base.Draw(interval);
-            new UIResText(this.Caption, new PointF((float)(int)resolutionMaintainRatio.Width - pointF.X - 160f, (float)(int)resolutionMaintainRatio.Height - pointF.Y - (float)(502 + 4 * interval)), 0.5f, this.CaptionColor, base.LabelFont, Alignment.Left).Draw();
+            new UIResText(Caption, new PointF((int)res.Width - safe.X - 160, (int)res.Height - safe.Y - (502 + (4 * interval))), 0.5f, CaptionColor, LabelFont, Alignment.Left).Draw();
         }
     }
 }

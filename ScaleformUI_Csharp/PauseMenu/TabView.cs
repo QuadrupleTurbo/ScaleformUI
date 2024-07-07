@@ -145,6 +145,7 @@ namespace ScaleformUI.PauseMenu
                     SetPlayerControl(Game.Player.Handle, true, 0);
                     _poolcontainer.ProcessMenus(false);
                     ActivateFrontendMenu((uint)Game.GenerateHash("FE_MENU_VERSION_EMPTY_NO_BACKGROUND"), false, -1);
+                    leftItemIndex = 0;
                 }
             }
         }
@@ -461,15 +462,18 @@ namespace ScaleformUI.PauseMenu
                 if (controller)
                 {
                     controller = false;
-                    foreach (var lItem in (Tabs[Index] as SubmenuTab).LeftItemList)
+                    if ((Tabs[Index] as SubmenuTab).LeftItemList != null)
                     {
-                        var idx = (Tabs[Index] as SubmenuTab).LeftItemList.IndexOf(lItem);
-                        if (lItem.ItemType == LeftItemType.Keymap)
+                        foreach (var lItem in (Tabs[Index] as SubmenuTab).LeftItemList)
                         {
-                            for (int i = 0; i < lItem.ItemList.Count; i++)
+                            var idx = (Tabs[Index] as SubmenuTab).LeftItemList.IndexOf(lItem);
+                            if (lItem.ItemType == LeftItemType.Keymap)
                             {
-                                KeymapItem item = (KeymapItem)lItem.ItemList[i];
-                                _pause.UpdateKeymap(Index, idx, i, item.PrimaryKeyboard, item.SecondaryKeyboard);
+                                for (int i = 0; i < lItem.ItemList.Count; i++)
+                                {
+                                    KeymapItem item = (KeymapItem)lItem.ItemList[i];
+                                    _pause.UpdateKeymap(Index, idx, i, item.PrimaryKeyboard, item.SecondaryKeyboard);
+                                }
                             }
                         }
                     }
@@ -495,15 +499,15 @@ namespace ScaleformUI.PauseMenu
 
                     //Debug.WriteLine($"{Tabs[Index].LeftItemList.Count - 1}:{leftItemIndex}:{LeftItemIndex}");
 
+                    //Debug.WriteLine("Before: " + LeftItemIndex.ToString());
+
                     while (!Tabs[Index].LeftItemList[leftItemIndex].Enabled)
                     {
                         await BaseScript.Delay(0);
                         leftItemIndex++;
+                        //Debug.WriteLine("After: " + LeftItemIndex.ToString());
                         _pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", leftItemIndex);
                     }
-
-                    //if (TabIndexes.ContainsKey(Tabs[Index]))
-                        Debug.WriteLine(TabIndexes[Tabs[Index]].ToString());
 
                     break;
                 case 1:
@@ -520,6 +524,14 @@ namespace ScaleformUI.PauseMenu
                             {
                                 FocusLevel = 2;
                                 if (leftItem.ItemList.All(x => !(x as SettingsItem).Enabled)) break;
+
+                                if (leftItem.ItemList.Count - 1 < rightItemIndex)
+                                {
+                                    //Debug.WriteLine("Reset");
+                                    rightItemIndex = 0;
+                                    _pause._pause.CallFunction("SELECT_RIGHT_ITEM_INDEX", rightItemIndex);
+                                }
+
                                 while (!(leftItem.ItemList[rightItemIndex] as SettingsItem).Enabled)
                                 {
                                     await BaseScript.Delay(0);
@@ -594,7 +606,7 @@ namespace ScaleformUI.PauseMenu
                                         (rightItem as SettingsListItem).ListSelected();
                                         break;
                                     case SettingsItemType.CheckBox:
-                                        (rightItem as SettingsCheckboxItem).IsChecked = !(rightItem as SettingsCheckboxItem).IsChecked!;
+                                        (rightItem as SettingsCheckboxItem).IsChecked = !(rightItem as SettingsCheckboxItem).IsChecked;
                                         break;
                                     case SettingsItemType.MaskedProgressBar:
                                     case SettingsItemType.ProgressBar:
@@ -723,7 +735,8 @@ namespace ScaleformUI.PauseMenu
                         _pause.HeaderGoLeft();
                         Index = retVal;
                         if (Tabs[Index] is PlayerListTab _plTab)
-                            _plTab.PlayersColumn.Items[_plTab.PlayersColumn.CurrentSelection].CreateClonedPed();
+                            if (_plTab.PlayersColumn.CurrentSelection >= 0 && _plTab.PlayersColumn.CurrentSelection < _plTab.PlayersColumn.Items.Count - 1)
+                                _plTab.PlayersColumn.Items[_plTab.PlayersColumn.CurrentSelection].CreateClonedPed();
                         else ClearPedInPauseMenu();
                         break;
                     case 1:
@@ -816,7 +829,8 @@ namespace ScaleformUI.PauseMenu
                         _pause.HeaderGoRight();
                         Index = retVal;
                         if (Tabs[Index] is PlayerListTab _plTab)
-                            _plTab.PlayersColumn.Items[_plTab.PlayersColumn.CurrentSelection].CreateClonedPed();
+                            if (_plTab.PlayersColumn.CurrentSelection >= 0 && _plTab.PlayersColumn.CurrentSelection < _plTab.PlayersColumn.Items.Count - 1)
+                                _plTab.PlayersColumn.Items[_plTab.PlayersColumn.CurrentSelection].CreateClonedPed();
                         else ClearPedInPauseMenu();
                         break;
                     case 1:
@@ -924,7 +938,8 @@ namespace ScaleformUI.PauseMenu
                                 _pause.SelectTab(itemId);
                                 FocusLevel = 1;
                                 Index = itemId;
-                                LeftItemIndex = itemId;
+                                if (leftItemIndex > itemId)
+                                    leftItemIndex = itemId;
                                 if (Tabs[Index] is PlayerListTab tab)
                                 {
                                     if (tab.PlayersColumn.Items[tab.PlayersColumn.CurrentSelection].ClonePed != null)
@@ -1012,7 +1027,9 @@ namespace ScaleformUI.PauseMenu
                                     }
                                     else if (focusLevel == 1)
                                     {
-                                        if (!Tabs[Index].LeftItemList[LeftItemIndex].Enabled)
+                                        //Debug.WriteLine(Tabs[Index].LeftItemList[itemId].Enabled.ToString());
+
+                                        if (!Tabs[Index].LeftItemList[itemId].Enabled)
                                         {
                                             Game.PlaySound(AUDIO_ERROR, AUDIO_LIBRARY);
                                             return;
@@ -1025,17 +1042,24 @@ namespace ScaleformUI.PauseMenu
                                         }
                                         else if (Tabs[Index].LeftItemList[LeftItemIndex].ItemType == LeftItemType.Info)
                                         {
+                                            //Debug.WriteLine("Before: " + Tabs[Index].LeftItemList[LeftItemIndex].Label);
+
                                             if (LeftItemIndex == itemId)
                                             {
                                                 Tabs[Index].LeftItemList[itemId].Activated();
                                             }
+
                                             Tabs[Index].LeftItemList[LeftItemIndex].Selected = false;
                                             LeftItemIndex = itemId;
                                             Tabs[Index].LeftItemList[LeftItemIndex].Selected = true;
                                             _pause._pause.CallFunction("SELECT_LEFT_ITEM_INDEX", itemId);
                                             SendPauseMenuLeftItemSelect();
+
+                                            //Debug.WriteLine("After: " + Tabs[Index].LeftItemList[LeftItemIndex].Label);
+
                                             break;
                                         }
+
                                         Tabs[Index].LeftItemList[LeftItemIndex].Selected = false;
                                         LeftItemIndex = itemId;
                                         Tabs[Index].LeftItemList[LeftItemIndex].Selected = true;
@@ -1091,14 +1115,14 @@ namespace ScaleformUI.PauseMenu
                                     //(Tabs[Index].LeftItemList[leftItemIndex].ItemList[RightItemIndex] as SettingsTabItem).Activated();
                                     if ((Tabs[Index].LeftItemList[leftItemIndex].ItemList[itemId] as SettingsItem).Selected)
                                     {
-                                        var item = (Tabs[Index].LeftItemList[leftItemIndex].ItemList[RightItemIndex] as SettingsItem);
+                                        var item = (Tabs[Index].LeftItemList[leftItemIndex].ItemList[itemId] as SettingsItem);
                                         switch (item.ItemType)
                                         {
                                             case SettingsItemType.ListItem:
                                                 (item as SettingsListItem).ListSelected();
                                                 break;
                                             case SettingsItemType.CheckBox:
-                                                (item as SettingsCheckboxItem).IsChecked = !(item as SettingsCheckboxItem).IsChecked!;
+                                                (item as SettingsCheckboxItem).IsChecked = !(item as SettingsCheckboxItem).IsChecked;
                                                 break;
                                             case SettingsItemType.MaskedProgressBar:
                                             case SettingsItemType.ProgressBar:
@@ -1114,10 +1138,19 @@ namespace ScaleformUI.PauseMenu
                                         SendPauseMenuRightItemSelect();
                                         return;
                                     }
-                                    (Tabs[Index].LeftItemList[leftItemIndex].ItemList[RightItemIndex] as SettingsItem).Selected = false;
-                                    RightItemIndex = itemId;
-                                    _pause._pause.CallFunction("SELECT_RIGHT_ITEM_INDEX", itemId);
-                                    (Tabs[Index].LeftItemList[leftItemIndex].ItemList[RightItemIndex] as SettingsItem).Selected = true;
+
+                                    if (Tabs[Index].LeftItemList[leftItemIndex].ItemList.Count != 1)
+                                    {
+                                        (Tabs[Index].LeftItemList[leftItemIndex].ItemList[RightItemIndex] as SettingsItem).Selected = false;
+                                        RightItemIndex = itemId;
+                                        _pause._pause.CallFunction("SELECT_RIGHT_ITEM_INDEX", itemId);
+                                        (Tabs[Index].LeftItemList[leftItemIndex].ItemList[RightItemIndex] as SettingsItem).Selected = true;
+                                    }
+                                    else
+                                    {
+                                        RightItemIndex = 0;
+                                        _pause._pause.CallFunction("SELECT_RIGHT_ITEM_INDEX", itemId);
+                                    }
                                 }
 
                                 break;
