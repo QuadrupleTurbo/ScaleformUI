@@ -88,13 +88,12 @@ namespace ScaleformUI.Scaleforms.Countdown
 
         private async Task DisplayCountdown()
         {
-            try
+            while (_sc != null && _sc.IsLoaded)
             {
-                await BaseScript.Delay(0);
                 if (_sc != null)
                     _sc.Render2D();
+                await BaseScript.Delay(0);
             }
-            catch { }
         }
     }
 }

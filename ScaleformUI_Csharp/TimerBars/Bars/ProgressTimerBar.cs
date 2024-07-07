@@ -59,17 +59,12 @@ namespace ScaleformUI
             PointF pointF = ScreenTools.SafezoneBounds;
             base.Draw(interval);
 
-            var start = new PointF((int)res.Width - safe.X - 160, (int)res.Height - safe.Y - (488 + (4 * interval)));
-
-            _background.Position = start;
-            _foreground.Position = start;
-
-            _foreground.Size = new SizeF(150 * Percentage, 15);
-            
-            // In case someone decides to change colors while drawing..
+            PointF position = new PointF((int)resolutionMaintainRatio.Width - pointF.X - 160f, (int)resolutionMaintainRatio.Height - pointF.Y - (488 + 4 * interval));
+            _background.Position = position;
+            _foreground.Position = position;
+            _foreground.Size = new SizeF(150f * Percentage, 15f);
             _background.Color = BackgroundColor;
             _foreground.Color = ForegroundColor;
-
             _background.Draw();
             _foreground.Draw();
         }

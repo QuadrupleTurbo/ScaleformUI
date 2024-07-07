@@ -2775,24 +2775,6 @@ namespace ScaleformUI
         /// <summary>
         /// Set the CounterText color.
         /// </summary>
-        public Color SubTitleColour
-        {
-            get => _subTitleColour;
-            set
-            {
-                _subTitleColour = value;
-                subtitle = $"<FONT COLOR=\'#{value.R:X2}{value.G:X2}{value.B:X2}\'>{subtitle}";
-
-                if (Visible)
-                {
-                    ScaleformUI._ui.CallFunction("UPDATE_TITLE_SUBTITLE", title, subtitle, AlternativeTitle);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Set the CounterText color.
-        /// </summary>
         public HudColor CounterColor
         {
             get => counterColor;
