@@ -489,6 +489,10 @@ namespace ScaleformUI.LobbyMenu
                 }
                 switch (item)
                 {
+                    case UIMenuListItem:
+                        UIMenuListItem it = item as UIMenuListItem;
+                        it.ListSelectedTrigger(it.Index);
+                        break;
                     case UIMenuCheckboxItem:
                         var cbIt = item as UIMenuCheckboxItem;
                         cbIt.Checked = !cbIt.Checked;
